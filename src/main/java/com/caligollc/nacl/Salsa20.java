@@ -8,7 +8,7 @@ public class Salsa20 {
 		byte out[];
 		byte subNonce[] = new byte[16];
 
-		System.out.println(nonce.length);
+		//System.out.println(nonce.length);
 		if (nonce.length == 24) {
 			byte subKey[];
 			byte hNonce[] = new byte[16];

@@ -18,9 +18,9 @@ public class Salsa {
 	// core applies the Salsa20 core function to 16-byte input in, 32-byte key k,
 	// and 16-byte constant c, and puts the result into 64-byte array out.
 	public static byte[] core(byte in[], byte k[], byte c[]) {
-		Util.printHex("in core 13", in);
-		Util.printHex("k core 14", k);
-		Util.printHex("c core 15", c);
+		//Util.printHex("in core 13", in);
+		//Util.printHex("k core 14", k);
+		//Util.printHex("c core 15", c);
 		byte out[] = new byte[64];
 		long j0 = mask(c[0]) | mask(c[1]) << 8 | mask(c[2]) << 16 | mask(c[3]) << 24;
 		long j1 = mask(k[0]) | mask(k[1]) << 8 | mask(k[2]) << 16 | mask(k[3]) << 24;
