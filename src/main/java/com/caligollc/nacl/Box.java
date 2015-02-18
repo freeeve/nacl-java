@@ -30,8 +30,8 @@ public class Box {
 	}
 
 	private byte[] precompute(byte[] peersPublicKey, byte[] privateKey) {
-		byte sharedKey[] = new byte[32];
-		//Curve25519.scalarMult(sharedKey, privateKey, peersPublicKey);
+		byte sharedKey[];
+		sharedKey = Curve25519.scalarMult(privateKey, peersPublicKey);
 		sharedKey = Salsa.HSalsa20(zeros, sharedKey, Salsa.SIGMA);
 		return sharedKey;
 	}
