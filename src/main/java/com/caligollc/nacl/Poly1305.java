@@ -53,6 +53,11 @@ public class Poly1305 {
 		System.out.printf("%s %d\n", name, Double.doubleToRawLongBits(d));
 	}
 
+	public static boolean verify(byte mac[], byte m[], byte key[]) {
+		byte tmp[] = sum(m, key);
+		return Subtle.constantTimeCompare(tmp, mac);
+	}
+
 	// Sum generates an authenticator for m using a one-time key and puts the
 	// 16-byte result into out. Authenticating two different messages with the same
 	// key allows an attacker to forge messages at will.
