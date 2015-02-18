@@ -36,9 +36,7 @@ public class Box {
 		return sharedKey;
 	}
 
-	public byte[] open(String cipherText, String nonce) throws NaclException {
-		byte[] nonceBytes = DatatypeConverter.parseBase64Binary(nonce);
-
-		return new byte[1];//secretbox.Open(out, box, nonce, &sharedKey)
+	public byte[] open(String box, String nonce) throws NaclException {
+		return SecretBox.open(DatatypeConverter.parseBase64Binary(box), DatatypeConverter.parseBase64Binary(nonce), sharedKey);
 	}
 }

@@ -185,23 +185,23 @@ public class Poly1305 {
 		int l = m.length;
 		//debug("l", l);
 
-		long r00 = r[0];
+		long r00 = 0xFF & r[0];
 		//debug("r00", r00);
-		long r01 = r[1];
+		long r01 = 0xFF & r[1];
 		//debug("r01", r01);
-		long r02 = r[2];
+		long r02 = 0xFF & r[2];
 		//debug("r02", r02);
 		long r0 = 2151;
 		//debug("r0", r0);
 
-		long r03 = r[3];
+		long r03 = 0xFF & r[3];
 		//debug("r03", r03);
 		r03 &= 15;
 		//debug("r03", r03);
 		r0 <<= 51;
 		//debug("r0", r0);
 
-		long r10 = r[4];
+		long r10 = 0xFF & r[4];
 		//debug("r10", r10);
 		r10 &= 252;
 		//debug("r10", r10);
@@ -210,21 +210,21 @@ public class Poly1305 {
 		r0 += r00;
 		//debug("r0", r0);
 
-		long r11 = r[5];
+		long r11 = 0xFF & r[5];
 		//debug("r11", r11);
 		r02 <<= 16;
 		//debug("r02", r02);
 		r0 += r01;
 		//debug("r0", r0);
 
-		long r12 = r[6];
+		long r12 = 0xFF & r[6];
 		//debug("r12", r12);
 		r03 <<= 24;
 		//debug("r03", r03);
 		r0 += r02;
 		//debug("r0", r0);
 
-		long r13 = r[7];
+		long r13 = 0xFF & r[7];
 		//debug("r13", r13);
 		r13 &= 15;
 		//debug("r13", r13);
@@ -240,7 +240,7 @@ public class Poly1305 {
 		long r2 = 2279;
 		//debug("r2", r2);
 
-		long r20 = r[8];
+		long r20 = 0xFF & r[8];
 		//debug("r20", r20);
 		r20 &= 252;
 		//debug("r20", r20);
@@ -249,21 +249,21 @@ public class Poly1305 {
 		r1 += r10;
 		//debug("r1", r1);
 
-		long r21 = r[9];
+		long r21 = 0xFF & r[9];
 		//debug("r21", r21);
 		r12 <<= 16;
 		//debug("r12", r12);
 		r1 += r11;
 		//debug("r1", r1);
 
-		long r22 = r[10];
+		long r22 = 0xFF & r[10];
 		//debug("r22", r22);
 		r13 <<= 24;
 		//debug("r13", r13);
 		r1 += r12;
 		//debug("r1", r1);
 
-		long r23 = r[11];
+		long r23 = 0xFF & r[11];
 		//debug("r23", r23);
 		r23 &= 15;
 		//debug("r23", r23);
@@ -279,7 +279,7 @@ public class Poly1305 {
 		r2 += r20;
 		//debug("r2", r2);
 
-		long r30 = r[12];
+		long r30 = 0xFF & r[12];
 		//debug("r30", r30);
 		r30 &= 252;
 		//debug("r30", r30);
@@ -288,14 +288,14 @@ public class Poly1305 {
 		r2 += r21;
 		//debug("r2", r2);
 
-		long r31 = r[13];
+		long r31 = 0xFF & r[13];
 		//debug("r31", r31);
 		r23 <<= 24;
 		//debug("r23", r23);
 		r2 += r22;
 		//debug("r2", r2);
 
-		long r32 = r[14];
+		long r32 = 0xFF & r[14];
 		//debug("r32", r32);
 		r2 += r23;
 		//debug("r2", r2);
@@ -307,7 +307,7 @@ public class Poly1305 {
 		r3 <<= 51;
 		//debug("r3", r3);
 
-		long r33 = r[15];
+		long r33 = 0xFF & r[15];
 		//debug("r33", r33);
 		r33 &= 15;
 		//debug("r33", r33);
@@ -475,534 +475,891 @@ public class Poly1305 {
 
 
 		if (!(l < 16)) {
-			m00 = uint32(m[(int)p]);
+			m00 = 0xFF & m[(int)p];
+			//debug("m00", m00);
 			m0 = 2151;
+			//debug("m0", m0);
 
 			m0 <<= 51;
+			//debug("m0", m0);
 			m1 = 2215;
-			m01 = uint32(m[(int)p+1]);
+			//debug("m1", m1);
+			m01 = 0xFF & m[(int)p+1];
+			//debug("m01", m01);
 
 			m1 <<= 51;
+			//debug("m1", m1);
 			m2 = 2279;
-			m02 = uint32(m[(int)p+2]);
+			//debug("m2", m2);
+			m02 = 0xFF & m[(int)p+2];
+			//debug("m02", m02);
 
 			m2 <<= 51;
+			//debug("m2", m2);
 			m3 = 2343;
-			m03 = uint32(m[(int)p+3]);
+			//debug("m3", m3);
+			m03 = 0xFF & (m[(int)p+3]);
+			//debug("m03", m03);
 
-			m10 = uint32(m[(int)p+4]);
+			m10 = 0xFF & (m[(int)p+4]);
+			//debug("m10", m10);
 			m01 <<= 8;
+			//debug("m01", m01);
 			m0 += int64(m00);
+			//debug("m0", m0);
 
-			m11 = uint32(m[(int)p+5]);
+			m11 = 0xFF & (m[(int)p+5]);
+			//debug("m11", m11);
 			m02 <<= 16;
+			//debug("m02", m02);
 			m0 += int64(m01);
+			//debug("m0", m0);
 
-			m12 = uint32(m[(int)p+6]);
+			m12 = 0xFF & (m[(int)p+6]);
+			//debug("m12", m12);
 			m03 <<= 24;
+			//debug("m03", m03);
 			m0 += int64(m02);
+			//debug("m0", m0);
 
-			m13 = uint32(m[(int)p+7]);
+			m13 = 0xFF & (m[(int)p+7]);
+			//debug("m13", m13);
 			m3 <<= 51;
+			//debug("m3", m3);
 			m0 += int64(m03);
+			//debug("m0", m0);
 
-			m20 = uint32(m[(int)p+8]);
+			m20 = 0xFF & (m[(int)p+8]);
+			//debug("m20", m20);
 			m11 <<= 8;
+			//debug("m11", m11);
 			m1 += int64(m10);
+			//debug("m1", m1);
 
-			m21 = uint32(m[(int)p+9]);
+			m21 = 0xFF & (m[(int)p+9]);
+			//debug("m21", m21);
 			m12 <<= 16;
+			//debug("m12", m12);
 			m1 += int64(m11);
+			//debug("m1", m1);
 
-			m22 = uint32(m[(int)p+10]);
+			m22 = 0xFF & (m[(int)p+10]);
+			//debug("m22", m22);
 			m13 <<= 24;
+			//debug("m13", m13);
 			m1 += int64(m12);
+			//debug("m1", m1);
 
-			m23 = uint32(m[(int)p+11]);
+			m23 = 0xFF & (m[(int)p+11]);
+			//debug("m23", m23);
 			m1 += int64(m13);
+			//debug("m1", m1);
 
-			m30 = uint32(m[(int)p+12]);
+			m30 = 0xFF & (m[(int)p+12]);
+			//debug("m30", m30);
 			m21 <<= 8;
+			//debug("m21", m21);
 			m2 += int64(m20);
+			//debug("m2", m2);
 
-			m31 = uint32(m[(int)p+13]);
+			m31 = 0xFF & (m[(int)p+13]);
+			//debug("m31", m31);
 			m22 <<= 16;
+			//debug("m22", m22);
 			m2 += int64(m21);
+			//debug("m2", m2);
 
-			m32 = uint32(m[(int)p+14]);
+			m32 = 0xFF & (m[(int)p+14]);
+			//debug("m32", m32);
 			m23 <<= 24;
+			//debug("m23", m23);
 			m2 += int64(m22);
+			//debug("m2", m2);
 
-			m33 = uint64(m[(int)p+15]);
+			m33 = 0xFF & (m[(int)p+15]);
+			//debug("m33", m33);
 			m2 += int64(m23);
+			//debug("m2", m2);
 
 			d0 = m0;
+			//debug("d0", d0);
 			m31 <<= 8;
+			//debug("m31", m31);
 			m3 += int64(m30);
+			//debug("m3", m3);
 
 			d1 = m1;
+			//debug("d1", d1);
 			m32 <<= 16;
+			//debug("m32", m32);
 			m3 += int64(m31);
+			//debug("m3", m3);
 
 			d2 = m2;
+			//debug("d2", d2);
 			m33 += 256;
+			//debug("m33", m33);
 
 			m33 <<= 24;
+			//debug("m33", m33);
 			m3 += int64(m32);
+			//debug("m3", m3);
 
 			m3 += int64(m33);
+			//debug("m3", m3);
 			d3 = m3;
+			//debug("d3", d3);
 
 			p += 16;
+			//debug("p", p);
 			l -= 16;
+			//debug("l", l);
 
 			z0 = Double.longBitsToDouble(uint64(d0));
+			//debug("z0", z0);
 
 			z1 = Double.longBitsToDouble(uint64(d1));
+			//debug("z1", z1);
 
 			z2 = Double.longBitsToDouble(uint64(d2));
+			//debug("z2", z2);
 
 			z3 = Double.longBitsToDouble(uint64(d3));
+			//debug("z3", z3);
 
 			z0 -= alpha0;
+			//debug("z0", z0);
 
 			z1 -= alpha32;
+			//debug("z1", z1);
 
 			z2 -= alpha64;
+			//debug("z2", z2);
 
 			z3 -= alpha96;
+			//debug("z3", z3);
 
 			h0 += z0;
+			//debug("h0", h0);
 
 			h1 += z1;
+			//debug("h1", h1);
 
 			h3 += z2;
+			//debug("h3", h3);
 
 			h5 += z3;
+			//debug("h5", h5);
 
 			while (l >= 16) {
 				//multiplyaddatleast16bytes:
 
 				m2 = 2279;
-				m20 = uint32(m[(int)p+8]);
+				//debug("m2", m2);
+				m20 = 0xFF & (m[(int)p+8]);
+				//debug("m20", m20);
 				y7 = h7 + alpha130;
+				//debug("y7", y7);
 
 				m2 <<= 51;
+				//debug("m2", m2);
 				m3 = 2343;
-				m21 = uint32(m[(int)p+9]);
+				//debug("m3", m3);
+				m21 = 0xFF & (m[(int)p+9]);
+				//debug("m21", m21);
 				y6 = h6 + alpha130;
+				//debug("y6", y6);
 
 				m3 <<= 51;
+				//debug("m3", m3);
 				m0 = 2151;
-				m22 = uint32(m[(int)p+10]);
+				//debug("m0", m0);
+				m22 = 0xFF & (m[(int)p+10]);
+				//debug("m22", m22);
 				y1 = h1 + alpha32;
+				//debug("y1", y1);
 
 				m0 <<= 51;
+				//debug("m0", m0);
 				m1 = 2215;
-				m23 = uint32(m[(int)p+11]);
+				//debug("m1", m1);
+				m23 = 0xFF & (m[(int)p+11]);
+				//debug("m23", m23);
 				y0 = h0 + alpha32;
+				//debug("y0", y0);
 
 				m1 <<= 51;
-				m30 = uint32(m[(int)p+12]);
+				//debug("m1", m1);
+				m30 = 0xFF & (m[(int)p+12]);
+				//debug("m30", m30);
 				y7 -= alpha130;
+				//debug("y7", y7);
 
 				m21 <<= 8;
+				//debug("m21", m21);
 				m2 += int64(m20);
-				m31 = uint32(m[(int)p+13]);
+				//debug("m2", m2);
+				m31 = 0xFF & (m[(int)p+13]);
+				//debug("m31", m31);
 				y6 -= alpha130;
+				//debug("y6", y6);
 
 				m22 <<= 16;
+				//debug("m22", m22);
 				m2 += int64(m21);
-				m32 = uint32(m[(int)p+14]);
+				//debug("m2", m2);
+				m32 = 0xFF & (m[(int)p+14]);
+				//debug("m32", m32);
 				y1 -= alpha32;
+				//debug("y1", y1);
 
 				m23 <<= 24;
+				//debug("m23", m23);
 				m2 += int64(m22);
-				m33 = uint64(m[(int)p+15]);
+				//debug("m2", m2);
+				m33 = 0xFF & (m[(int)p+15]);
+				//debug("m33", m33);
 				y0 -= alpha32;
+				//debug("y0", y0);
 
 				m2 += int64(m23);
-				m00 = uint32(m[(int)p+0]);
+				//debug("m2", m2);
+				m00 = 0xFF & (m[(int)p+0]);
+				//debug("m00", m00);
 				y5 = h5 + alpha96;
+				//debug("y5", y5);
 
 				m31 <<= 8;
+				//debug("m31", m31);
 				m3 += int64(m30);
-				m01 = uint32(m[(int)p+1]);
+				//debug("m3", m3);
+				m01 = 0xFF & (m[(int)p+1]);
+				//debug("m01", m01);
 				y4 = h4 + alpha96;
+				//debug("y4", y4);
 
 				m32 <<= 16;
-				m02 = uint32(m[(int)p+2]);
+				//debug("m32", m32);
+				m02 = 0xFF & (m[(int)p+2]);
+				//debug("m02", m02);
 				x7 = h7 - y7;
+				//debug("x7", x7);
 				y7 *= scale;
+				//debug("y7", y7);
 
 				m33 += 256;
-				m03 = uint32(m[(int)p+3]);
+				//debug("m33", m33);
+				m03 = 0xFF & (m[(int)p+3]);
+				//debug("m03", m03);
 				x6 = h6 - y6;
+				//debug("x6", x6);
 				y6 *= scale;
+				//debug("y6", y6);
 
 				m33 <<= 24;
+				//debug("m33", m33);
 				m3 += int64(m31);
-				m10 = uint32(m[(int)p+4]);
+				//debug("m3", m3);
+				m10 = 0xFF & (m[(int)p+4]);
+				//debug("m10", m10);
 				x1 = h1 - y1;
+				//debug("x1", x1);
 
 				m01 <<= 8;
+				//debug("m01", m01);
 				m3 += int64(m32);
-				m11 = uint32(m[(int)p+5]);
+				//debug("m3", m3);
+				m11 = 0xFF & (m[(int)p+5]);
+				//debug("m11", m11);
 				x0 = h0 - y0;
+				//debug("x0", x0);
 
 				m3 += int64(m33);
+				//debug("m3", m3);
 				m0 += int64(m00);
-				m12 = uint32(m[(int)p+6]);
+				//debug("m0", m0);
+				m12 = 0xFF & (m[(int)p+6]);
+				//debug("m12", m12);
 				y5 -= alpha96;
+				//debug("y5", y5);
 
 				m02 <<= 16;
+				//debug("m02", m02);
 				m0 += int64(m01);
-				m13 = uint32(m[(int)p+7]);
+				//debug("m0", m0);
+				m13 = 0xFF & (m[(int)p+7]);
+				//debug("m13", m13);
 				y4 -= alpha96;
+				//debug("y4", y4);
 
 				m03 <<= 24;
+				//debug("m03", m03);
 				m0 += int64(m02);
+				//debug("m0", m0);
 				d2 = m2;
+				//debug("d2", d2);
 				x1 += y7;
+				//debug("x1", x1);
 
 				m0 += int64(m03);
+				//debug("m0", m0);
 				d3 = m3;
+				//debug("d3", d3);
 				x0 += y6;
+				//debug("x0", x0);
 
 				m11 <<= 8;
+				//debug("m11", m11);
 				m1 += int64(m10);
+				//debug("m1", m1);
 				d0 = m0;
+				//debug("d0", d0);
 				x7 += y5;
+				//debug("x7", x7);
 
 				m12 <<= 16;
+				//debug("m12", m12);
 				m1 += int64(m11);
+				//debug("m1", m1);
 				x6 += y4;
+				//debug("x6", x6);
 
 				m13 <<= 24;
+				//debug("m13", m13);
 				m1 += int64(m12);
+				//debug("m1", m1);
 				y3 = h3 + alpha64;
+				//debug("y3", y3);
 
 				m1 += int64(m13);
+				//debug("m1", m1);
 				d1 = m1;
+				//debug("d1", d1);
 				y2 = h2 + alpha64;
+				//debug("y2", y2);
 
 				x0 += x1;
+				//debug("x0", x0);
 
 				x6 += x7;
+				//debug("x6", x6);
 
 				y3 -= alpha64;
+				//debug("y3", y3);
 				r3low = r3low_stack;
+				//debug("r3low", r3low);
 
 				y2 -= alpha64;
+				//debug("y2", y2);
 				r0low = r0low_stack;
+				//debug("r0low", r0low);
 
 				x5 = h5 - y5;
+				//debug("x5", x5);
 				r3lowx0 = r3low * x0;
+				//debug("r3lowx0", r3lowx0);
 				r3high = r3high_stack;
+				//debug("r3high", r3high);
 
 				x4 = h4 - y4;
+				//debug("x4", x4);
 				r0lowx6 = r0low * x6;
+				//debug("r0lowx6", r0lowx6);
 				r0high = r0high_stack;
+				//debug("r0high", r0high);
 
 				x3 = h3 - y3;
+				//debug("x3", x3);
 				r3highx0 = r3high * x0;
+				//debug("r3highx0", r3highx0);
 				sr1low = sr1low_stack;
+				//debug("sr1low", sr1low);
 
 				x2 = h2 - y2;
+				//debug("x2", x2);
 				r0highx6 = r0high * x6;
+				//debug("r0highx6", r0highx6);
 				sr1high = sr1high_stack;
+				//debug("sr1high", sr1high);
 
 				x5 += y3;
+				//debug("x5", x5);
 				r0lowx0 = r0low * x0;
+				//debug("r0lowx0", r0lowx0);
 				r1low = r1low_stack;
+				//debug("r1low", r1low);
 
 				h6 = r3lowx0 + r0lowx6;
+				//debug("h6", h6);
 				sr1lowx6 = sr1low * x6;
+				//debug("sr1lowx6", sr1lowx6);
 				r1high = r1high_stack;
+				//debug("r1high", r1high);
 
 				x4 += y2;
+				//debug("x4", x4);
 				r0highx0 = r0high * x0;
+				//debug("r0highx0", r0highx0);
 				sr2low = sr2low_stack;
+				//debug("sr2low", sr2low);
 
 				h7 = r3highx0 + r0highx6;
+				//debug("h7", h7);
 				sr1highx6 = sr1high * x6;
+				//debug("sr1highx6", sr1highx6);
 				sr2high = sr2high_stack;
+				//debug("sr2high", sr2high);
 
 				x3 += y1;
+				//debug("x3", x3);
 				r1lowx0 = r1low * x0;
+				//debug("r1lowx0", r1lowx0);
 				r2low = r2low_stack;
+				//debug("r2low", r2low);
 
 				h0 = r0lowx0 + sr1lowx6;
+				//debug("h0", h0);
 				sr2lowx6 = sr2low * x6;
+				//debug("sr2lowx6", sr2lowx6);
 				r2high = r2high_stack;
+				//debug("r2high", r2high);
 
 				x2 += y0;
+				//debug("x2", x2);
 				r1highx0 = r1high * x0;
+				//debug("r1highx0", r1highx0);
 				sr3low = sr3low_stack;
+				//debug("sr3low", sr3low);
 
 				h1 = r0highx0 + sr1highx6;
+				//debug("h1", h1);
 				sr2highx6 = sr2high * x6;
+				//debug("sr2highx6", sr2highx6);
 				sr3high = sr3high_stack;
+				//debug("sr3high", sr3high);
 
 				x4 += x5;
+				//debug("x4", x4);
 				r2lowx0 = r2low * x0;
+				//debug("r2lowx0", r2lowx0);
 				z2 = Double.longBitsToDouble(uint64(d2));
+				//debug("z2", z2);
 
 				h2 = r1lowx0 + sr2lowx6;
+				//debug("h2", h2);
 				sr3lowx6 = sr3low * x6;
+				//debug("sr3lowx6", sr3lowx6);
 
 				x2 += x3;
+				//debug("x2", x2);
 				r2highx0 = r2high * x0;
+				//debug("r2highx0", r2highx0);
 				z3 = Double.longBitsToDouble(uint64(d3));
+				//debug("z3", z3);
 
 				h3 = r1highx0 + sr2highx6;
+				//debug("h3", h3);
 				sr3highx6 = sr3high * x6;
+				//debug("sr3highx6", sr3highx6);
 
 				r1highx4 = r1high * x4;
+				//debug("r1highx4", r1highx4);
 				z2 -= alpha64;
+				//debug("z2", z2);
 
 				h4 = r2lowx0 + sr3lowx6;
+				//debug("h4", h4);
 				r1lowx4 = r1low * x4;
+				//debug("r1lowx4", r1lowx4);
 
 				r0highx4 = r0high * x4;
+				//debug("r0highx4", r0highx4);
 				z3 -= alpha96;
+				//debug("z3", z3);
 
 				h5 = r2highx0 + sr3highx6;
+				//debug("h5", h5);
 				r0lowx4 = r0low * x4;
+				//debug("r0lowx4", r0lowx4);
 
 				h7 += r1highx4;
+				//debug("h7", h7);
 				sr3highx4 = sr3high * x4;
+				//debug("sr3highx4", sr3highx4);
 
 				h6 += r1lowx4;
+				//debug("h6", h6);
 				sr3lowx4 = sr3low * x4;
+				//debug("sr3lowx4", sr3lowx4);
 
 				h5 += r0highx4;
+				//debug("h5", h5);
 				sr2highx4 = sr2high * x4;
+				//debug("sr2highx4", sr2highx4);
 
 				h4 += r0lowx4;
+				//debug("h4", h4);
 				sr2lowx4 = sr2low * x4;
+				//debug("sr2lowx4", sr2lowx4);
 
 				h3 += sr3highx4;
+				//debug("h3", h3);
 				r0lowx2 = r0low * x2;
+				//debug("r0lowx2", r0lowx2);
 
 				h2 += sr3lowx4;
+				//debug("h2", h2);
 				r0highx2 = r0high * x2;
+				//debug("r0highx2", r0highx2);
 
 				h1 += sr2highx4;
+				//debug("h1", h1);
 				r1lowx2 = r1low * x2;
+				//debug("r1lowx2", r1lowx2);
 
 				h0 += sr2lowx4;
+				//debug("h0", h0);
 				r1highx2 = r1high * x2;
+				//debug("r1highx2", r1highx2);
 
 				h2 += r0lowx2;
+				//debug("h2", h2);
 				r2lowx2 = r2low * x2;
+				//debug("r2lowx2", r2lowx2);
 
 				h3 += r0highx2;
+				//debug("h3", h3);
 				r2highx2 = r2high * x2;
+				//debug("r2highx2", r2highx2);
 
 				h4 += r1lowx2;
+				//debug("h4", h4);
 				sr3lowx2 = sr3low * x2;
+				//debug("sr3lowx2", sr3lowx2);
 
 				h5 += r1highx2;
+				//debug("h5", h5);
 				sr3highx2 = sr3high * x2;
+				//debug("sr3highx2", sr3highx2);
 
 				p += 16;
+				//debug("p", p);
 				l -= 16;
+				//debug("l", l);
 				h6 += r2lowx2;
+				//debug("h6", h6);
 
 				h7 += r2highx2;
+				//debug("h7", h7);
 
 				z1 = Double.longBitsToDouble(uint64(d1));
+				//debug("z1", z1);
 				h0 += sr3lowx2;
+				//debug("h0", h0);
 
 				z0 = Double.longBitsToDouble(uint64(d0));
+				//debug("z0", z0);
 				h1 += sr3highx2;
+				//debug("h1", h1);
 
 				z1 -= alpha32;
+				//debug("z1", z1);
 
 				z0 -= alpha0;
+				//debug("z0", z0);
 
 				h5 += z3;
+				//debug("h5", h5);
 
 				h3 += z2;
+				//debug("h3", h3);
 
 				h1 += z1;
+				//debug("h1", h1);
 
 				h0 += z0;
+				//debug("h0", h0);
 
 			}
 
 			// multiplyaddatmost15bytes:
-
 			y7 = h7 + alpha130;
+			//debug("y7", y7);
 
 			y6 = h6 + alpha130;
+			//debug("y6", y6);
 
 			y1 = h1 + alpha32;
+			//debug("y1", y1);
 
 			y0 = h0 + alpha32;
+			//debug("y0", y0);
 
 			y7 -= alpha130;
+			//debug("y7", y7);
 
 			y6 -= alpha130;
+			//debug("y6", y6);
 
 			y1 -= alpha32;
+			//debug("y1", y1);
 
 			y0 -= alpha32;
+			//debug("y0", y0);
 
 			y5 = h5 + alpha96;
+			//debug("y5", y5);
 
 			y4 = h4 + alpha96;
+			//debug("y4", y4);
 
 			x7 = h7 - y7;
+			//debug("x7", x7);
 			y7 *= scale;
+			//debug("y7", y7);
 
 			x6 = h6 - y6;
+			//debug("x6", x6);
 			y6 *= scale;
+			//debug("y6", y6);
 
 			x1 = h1 - y1;
+			//debug("x1", x1);
 
 			x0 = h0 - y0;
+			//debug("x0", x0);
 
 			y5 -= alpha96;
+			//debug("y5", y5);
 
 			y4 -= alpha96;
+			//debug("y4", y4);
 
 			x1 += y7;
+			//debug("x1", x1);
 
 			x0 += y6;
+			//debug("x0", x0);
 
 			x7 += y5;
+			//debug("x7", x7);
 
 			x6 += y4;
+			//debug("x6", x6);
 
 			y3 = h3 + alpha64;
+			//debug("y3", y3);
 
 			y2 = h2 + alpha64;
+			//debug("y2", y2);
 
 			x0 += x1;
+			//debug("x0", x0);
 
 			x6 += x7;
+			//debug("x6", x6);
 
 			y3 -= alpha64;
+			//debug("y3", y3);
 			r3low = r3low_stack;
+			//debug("r3low", r3low);
 
 			y2 -= alpha64;
+			//debug("y2", y2);
 			r0low = r0low_stack;
+			//debug("r0low", r0low);
 
 			x5 = h5 - y5;
+			//debug("x5", x5);
 			r3lowx0 = r3low * x0;
+			//debug("r3lowx0", r3lowx0);
 			r3high = r3high_stack;
+			//debug("r3high", r3high);
 
 			x4 = h4 - y4;
+			//debug("x4", x4);
 			r0lowx6 = r0low * x6;
+			//debug("r0lowx6", r0lowx6);
 			r0high = r0high_stack;
+			//debug("r0high", r0high);
 
 			x3 = h3 - y3;
+			//debug("x3", x3);
 			r3highx0 = r3high * x0;
+			//debug("r3highx0", r3highx0);
 			sr1low = sr1low_stack;
+			//debug("sr1low", sr1low);
 
 			x2 = h2 - y2;
+			//debug("x2", x2);
 			r0highx6 = r0high * x6;
+			//debug("r0highx6", r0highx6);
 			sr1high = sr1high_stack;
+			//debug("sr1high", sr1high);
 
 			x5 += y3;
+			//debug("x5", x5);
 			r0lowx0 = r0low * x0;
+			//debug("r0lowx0", r0lowx0);
 			r1low = r1low_stack;
+			//debug("r1low", r1low);
 
 			h6 = r3lowx0 + r0lowx6;
+			//debug("h6", h6);
 			sr1lowx6 = sr1low * x6;
+			//debug("sr1lowx6", sr1lowx6);
 			r1high = r1high_stack;
+			//debug("r1high", r1high);
 
 			x4 += y2;
+			//debug("x4", x4);
 			r0highx0 = r0high * x0;
+			//debug("r0highx0", r0highx0);
 			sr2low = sr2low_stack;
+			//debug("sr2low", sr2low);
 
 			h7 = r3highx0 + r0highx6;
+			//debug("h7", h7);
 			sr1highx6 = sr1high * x6;
+			//debug("sr1highx6", sr1highx6);
 			sr2high = sr2high_stack;
+			//debug("sr2high", sr2high);
 
 			x3 += y1;
+			//debug("x3", x3);
 			r1lowx0 = r1low * x0;
+			//debug("r1lowx0", r1lowx0);
 			r2low = r2low_stack;
+			//debug("r2low", r2low);
 
 			h0 = r0lowx0 + sr1lowx6;
+			//debug("h0", h0);
 			sr2lowx6 = sr2low * x6;
+			//debug("sr2lowx6", sr2lowx6);
 			r2high = r2high_stack;
+			//debug("r2high", r2high);
 
 			x2 += y0;
+			//debug("x2", x2);
 			r1highx0 = r1high * x0;
+			//debug("r1highx0", r1highx0);
 			sr3low = sr3low_stack;
+			//debug("sr3low", sr3low);
 
 			h1 = r0highx0 + sr1highx6;
+			//debug("h1", h1);
 			sr2highx6 = sr2high * x6;
+			//debug("sr2highx6", sr2highx6);
 			sr3high = sr3high_stack;
+			//debug("sr3high", sr3high);
 
 			x4 += x5;
+			//debug("x4", x4);
 			r2lowx0 = r2low * x0;
+			//debug("r2lowx0", r2lowx0);
 
 			h2 = r1lowx0 + sr2lowx6;
+			//debug("h2", h2);
 			sr3lowx6 = sr3low * x6;
+			//debug("sr3lowx6", sr3lowx6);
 
 			x2 += x3;
+			//debug("x2", x2);
 			r2highx0 = r2high * x0;
+			//debug("r2highx0", r2highx0);
 
 			h3 = r1highx0 + sr2highx6;
+			//debug("h3", h3);
 			sr3highx6 = sr3high * x6;
+			//debug("sr3highx6", sr3highx6);
 
 			r1highx4 = r1high * x4;
+			//debug("r1highx4", r1highx4);
 
 			h4 = r2lowx0 + sr3lowx6;
+			//debug("h4", h4);
 			r1lowx4 = r1low * x4;
+			//debug("r1lowx4", r1lowx4);
 
 			r0highx4 = r0high * x4;
+			//debug("r0highx4", r0highx4);
 
 			h5 = r2highx0 + sr3highx6;
+			//debug("h5", h5);
 			r0lowx4 = r0low * x4;
+			//debug("r0lowx4", r0lowx4);
 
 			h7 += r1highx4;
+			//debug("h7", h7);
 			sr3highx4 = sr3high * x4;
+			//debug("sr3highx4", sr3highx4);
 
 			h6 += r1lowx4;
+			//debug("h6", h6);
 			sr3lowx4 = sr3low * x4;
+			//debug("sr3lowx4", sr3lowx4);
 
 			h5 += r0highx4;
+			//debug("h5", h5);
 			sr2highx4 = sr2high * x4;
+			//debug("sr2highx4", sr2highx4);
 
 			h4 += r0lowx4;
+			//debug("h4", h4);
 			sr2lowx4 = sr2low * x4;
+			//debug("sr2lowx4", sr2lowx4);
 
 			h3 += sr3highx4;
+			//debug("h3", h3);
 			r0lowx2 = r0low * x2;
+			//debug("r0lowx2", r0lowx2);
 
 			h2 += sr3lowx4;
+			//debug("h2", h2);
 			r0highx2 = r0high * x2;
+			//debug("r0highx2", r0highx2);
 
 			h1 += sr2highx4;
+			//debug("h1", h1);
 			r1lowx2 = r1low * x2;
+			//debug("r1lowx2", r1lowx2);
 
 			h0 += sr2lowx4;
+			//debug("h0", h0);
 			r1highx2 = r1high * x2;
+			//debug("r1highx2", r1highx2);
 
 			h2 += r0lowx2;
+			//debug("h2", h2);
 			r2lowx2 = r2low * x2;
+			//debug("r2lowx2", r2lowx2);
 
 			h3 += r0highx2;
+			//debug("h3", h3);
 			r2highx2 = r2high * x2;
+			//debug("r2highx2", r2highx2);
 
 			h4 += r1lowx2;
+			//debug("h4", h4);
 			sr3lowx2 = sr3low * x2;
+			//debug("sr3lowx2", sr3lowx2);
 
 			h5 += r1highx2;
+			//debug("h5", h5);
 			sr3highx2 = sr3high * x2;
+			//debug("sr3highx2", sr3highx2);
 
 			h6 += r2lowx2;
+			//debug("h6", h6);
 
 			h7 += r2highx2;
+			//debug("h7", h7);
 
 			h0 += sr3lowx2;
+			//debug("h0", h0);
 
 			h1 += sr3highx2;
+			//debug("h1", h1);
 		}
 
 		// addatmost15bytes:
@@ -1885,110 +2242,110 @@ public class Poly1305 {
 
 		g4 = g4 - 4;
 		//debug("g4", g4);
-		s00 = uint32(s[0]);
+		s00 = 0xFF & (s[0]);
 		//debug("s00", s00);
 
 		f = uint64(int64(g4) >> 63);
 		//debug("f", f);
-		s01 = uint32(s[1]);
+		s01 = 0xFF & (s[1]);
 		//debug("s01", s01);
 
 		f0 &= f;
 		//debug("f0", f0);
 		g0  &= ~f;
 		//debug("g0", g0);
-		s02 = uint32(s[2]);
+		s02 = 0xFF & (s[2]);
 		//debug("s02", s02);
 
 		f1 &= f;
 		//debug("f1", f1);
 		f0 |= g0;
 		//debug("f0", f0);
-		s03 = uint32(s[3]);
+		s03 = 0xFF & (s[3]);
 		//debug("s03", s03);
 
 		g1 &= ~f;
 		//debug("g1", g1);
 		f2 &= f;
 		//debug("f2", f2);
-		s10 = uint32(s[4]);
+		s10 = 0xFF & (s[4]);
 		//debug("s10", s10);
 
 		f3 &= f;
 		//debug("f3", f3);
 		g2 &= ~f;
 		//debug("g2", g2);
-		s11 = uint32(s[5]);
+		s11 = 0xFF & (s[5]);
 		//debug("s11", s11);
 
 		g3 &= ~f;
 		//debug("g3", g3);
 		f1 |= g1;
 		//debug("f1", f1);
-		s12 = uint32(s[6]);
+		s12 = 0xFF & (s[6]);
 		//debug("s12", s12);
 
 		f2 |= g2;
 		//debug("f2", f2);
 		f3 |= g3;
 		//debug("f3", f3);
-		s13 = uint32(s[7]);
+		s13 = 0xFF & (s[7]);
 		//debug("s13", s13);
 
 		s01 <<= 8;
 		//debug("s01", s01);
 		f0 += uint64(s00);
 		//debug("f0", f0);
-		s20 = uint32(s[8]);
+		s20 = 0xFF & (s[8]);
 		//debug("s20", s20);
 
 		s02 <<= 16;
 		//debug("s02", s02);
 		f0 += uint64(s01);
 		//debug("f0", f0);
-		s21 = uint32(s[9]);
+		s21 = 0xFF & (s[9]);
 		//debug("s21", s21);
 
 		s03 <<= 24;
 		//debug("s03", s03);
 		f0 += uint64(s02);
 		//debug("f0", f0);
-		s22 = uint32(s[10]);
+		s22 = 0xFF & (s[10]);
 		//debug("s22", s22);
 
 		s11 <<= 8;
 		//debug("s11", s11);
 		f1 += uint64(s10);
 		//debug("f1", f1);
-		s23 = 0xFFFFFFFF & (s[11]);
+		s23 = 0xFF & (s[11]);
 		//debug("s23", s23);
 
 		s12 <<= 16;
 		//debug("s12", s12);
 		f1 += uint64(s11);
 		//debug("f1", f1);
-		s30 = 0xFFFFFFFF & (s[12]);
+		s30 = 0xFF & (s[12]);
 		//debug("s30", s30);
 
 		s13 <<= 24;
 		//debug("s13", s13);
 		f1 += (s12);
 		//debug("f1", f1);
-		s31 = 0xFFFFFFFF & s[13];
+		s31 = 0xFF & s[13];
 		//debug("s31", s31);
 
 		f0 += (s03);
 		//debug("f0", f0);
 		f1 += (s13);
 		//debug("f1", f1);
-		s32 = uint32(s[14]);
+		s32 = 0xFF & (s[14]);
 		//debug("s32", s32);
 
 		s21 <<= 8;
 		//debug("s21", s21);
 		f2 += (s20);
 		//debug("f2", f2);
-		s33 = uint32(s[15]);
+		s33 = 0xFF & (s[15]);
 		//debug("s33", s33);
 
 		s22 <<= 16;
