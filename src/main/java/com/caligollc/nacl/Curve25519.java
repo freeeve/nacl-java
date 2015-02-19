@@ -1,5 +1,7 @@
 package com.caligollc.nacl;
 
+import javax.xml.bind.DatatypeConverter;
+
 /**
  * Created by wfreeman on 2/11/15.
  */
@@ -26,23 +28,19 @@ public class Curve25519 {
 		// load3 reads a 24-bit, little-endian value from in.
 		private static long load3(byte in[], int offset)  {
 			long r;
-			long mask = 0xFFFFFFFF;
-			r = 0xFF & in[offset + 0];
-			r |= mask & (in[offset + 1] << 8);
-			r |= mask & (in[offset + 2] << 16);
-			r &= mask;
+			r = (long)(0xFF & in[offset]);
+			r |= (long)(0xFF & in[offset + 1]) << 8;
+			r |= (long)(0xFF & in[offset + 2]) << 16;
 			return r;
 		}
 
 		// load4 reads a 32-bit, little-endian value from in.
 		private static long load4(byte in[], int offset)  {
 			long r;
-			long mask = 0xFFFFFFFF;
-			r = 0xFF & in[offset];
-			r |= mask & (in[offset + 1] << 8);
-			r |= mask & (in[offset + 2] << 16);
-			r |= mask & (in[offset + 3] << 24);
-			r &= mask;
+			r = (long)(0xFF & in[offset]);
+			r |= ((long)(0xFF & in[offset + 1])) << 8;
+			r |= ((long)(0xFF & in[offset + 2])) << 16;
+			r |= ((long)(0xFF & in[offset + 3])) << 24;
 			return r;
 		}
 
@@ -63,37 +61,47 @@ public class Curve25519 {
 			long h7 = load3(src, 23) << 5;
 			long h8 = load3(src, 26) << 4;
 			long h9 = load3(src, 29) << 2;
+			debug("h0", h0);
+			debug("h1", h1);
+			debug("h2", h2);
+			debug("h3", h3);
+			debug("h4", h4);
+			debug("h5", h5);
+			debug("h6", h6);
+			debug("h7", h7);
+			debug("h8", h8);
+			debug("h9", h9);
 
 			long carry[] = new long[10];
-			carry[9] = (int)((h9 + (1<<24)) >>> 25);
+			carry[9] = ((h9 + (1<<24)) >> 25);
 			h0 += carry[9] * 19;
 			h9 -= carry[9] << 25;
-			carry[1] = (int)((h1 + (1<<24)) >>> 25);
+			carry[1] = ((h1 + (1<<24)) >> 25);
 			h2 += carry[1];
 			h1 -= carry[1] << 25;
-			carry[3] = (int)((h3 + (1<<24)) >>> 25);
+			carry[3] = ((h3 + (1<<24)) >> 25);
 			h4 += carry[3];
 			h3 -= carry[3] << 25;
-			carry[5] = (int)((h5 + (1<<24)) >>> 25);
+			carry[5] = ((h5 + (1<<24)) >> 25);
 			h6 += carry[5];
 			h5 -= carry[5] << 25;
-			carry[7] = (int)((h7 + (1<<24)) >>> 25);
+			carry[7] = ((h7 + (1<<24)) >> 25);
 			h8 += carry[7];
 			h7 -= carry[7] << 25;
 
-			carry[0] = (int)((h0 + (1<<25)) >>> 26);
+			carry[0] = ((h0 + (1<<25)) >> 26);
 			h1 += carry[0];
 			h0 -= carry[0] << 26;
-			carry[2] = (int)((h2 + (1<<25)) >>> 26);
+			carry[2] = ((h2 + (1<<25)) >> 26);
 			h3 += carry[2];
 			h2 -= carry[2] << 26;
-			carry[4] = (int)((h4 + (1<<25)) >>> 26);
+			carry[4] = ((h4 + (1<<25)) >> 26);
 			h5 += carry[4];
 			h4 -= carry[4] << 26;
-			carry[6] = (int)((h6 + (1<<25)) >>> 26);
+			carry[6] = ((h6 + (1<<25)) >> 26);
 			h7 += carry[6];
 			h6 -= carry[6] << 26;
-			carry[8] = (int)((h8 + (1<<25)) >>> 26);
+			carry[8] = ((h8 + (1<<25)) >> 26);
 			h9 += carry[8];
 			h8 -= carry[8] << 26;
 
@@ -320,65 +328,65 @@ public class Curve25519 {
 			long carry[] = new long[10];
 
 			carry[0] = ((h0 + (1 << 25)) >> 26);
-			//System.out.println("carry[0] " + carry[0]);
+			//debug("carry[0]", carry[0]);
 			h1 += carry[0];
-			//System.out.println("h1 " + h1);
+			//debug("h1", h1);
 			h0 -= carry[0] << 26;
-			//System.out.println("h0 " + h0);
+			//debug("h0", h0);
 			carry[4] = ((h4 + (1 << 25)) >> 26);
-			//System.out.println("carry[4] " + carry[4]);
+			//debug("carry[4]", carry[4]);
 			h5 += carry[4];
-			//System.out.println("h5 " + h5);
+			//debug("h5", h5);
 			h4 -= carry[4] << 26;
-			//System.out.println("h4 " + h4);
+			//debug("h4", h4);
 
 			carry[1] = ((h1 + (1 << 24)) >> 25);
-			//System.out.println("carry[1] " + carry[1]);
+			//debug("carry[1]", carry[1]);
 			h2 += carry[1];
-			//System.out.println("h2 " + h2);
+			//debug("h2", h2);
 			h1 -= carry[1] << 25;
-			//System.out.println("h1 " + h1);
+			//debug("h1", h1);
 			carry[5] = ((h5 + (1 << 24)) >> 25);
-			//System.out.println("carry[5] " + carry[5]);
+			//debug("carry[5]", carry[5]);
 			h6 += carry[5];
-			//System.out.println("h6 " + h6);
+			//debug("h6", h6);
 			h5 -= carry[5] << 25;
-			//System.out.println("h5 " + h5);
+			//debug("h5", h5);
 
 			carry[2] = ((h2 + (1 << 25)) >> 26);
-			//System.out.println("carry[2] " + carry[2]);
+			//debug("carry[2]", carry[2]);
 			h3 += carry[2];
 			h2 -= carry[2] << 26;
 			carry[6] = ((h6 + (1 << 25)) >> 26);
-			//System.out.println("carry[6] " + carry[6]);
+			//debug("carry[6]", carry[6]);
 			h7 += carry[6];
 			h6 -= carry[6] << 26;
 
 			carry[3] = ((h3 + (1 << 24)) >> 25);
-			//System.out.println("carry[3] " + carry[3]);
+			//debug("carry[3]", carry[3]);
 			h4 += carry[3];
 			h3 -= carry[3] << 25;
 			carry[7] = ((h7 + (1 << 24)) >> 25);
-			//System.out.println("carry[7] " + carry[7]);
+			//debug("carry[7]", carry[7]);
 			h8 += carry[7];
 			h7 -= carry[7] << 25;
 
 			carry[4] = ((h4 + (1 << 25)) >> 26);
-			//System.out.println("carry[4] " + carry[4]);
+			//debug("carry[4]", carry[4]);
 			h5 += carry[4];
 			h4 -= carry[4] << 26;
 			carry[8] = ((h8 + (1 << 25)) >> 26);
-			//System.out.println("carry[8] " + carry[8]);
+			//debug("carry[8]", carry[8]);
 			h9 += carry[8];
 			h8 -= carry[8] << 26;
 
 			carry[9] = ((h9 + (1 << 24)) >> 25);
-			//System.out.println("carry[9] " + carry[9]);
+			//debug("carry[9]", carry[9]);
 			h0 += carry[9] * 19;
 			h9 -= carry[9] << 25;
 
 			carry[0] = ((h0 + (1 << 25)) >> 26);
-			//System.out.println("carry[0] " + carry[0]);
+			//debug("carry[0]", carry[0]);
 			h1 += carry[0];
 			h0 -= carry[0] << 26;
 
@@ -431,8 +439,8 @@ public class Curve25519 {
 
 	private static FieldElement feMul(FieldElement f, FieldElement g) {
 		FieldElement retVal = new FieldElement();
-		//System.out.println("f: " + f);
-		//System.out.println("g: " + g);
+		//debug("f:", f);
+		//debug("g:", g);
 		long f0 = f.arr[0];
 		long f1 = f.arr[1];
 		long f2 = f.arr[2];
@@ -585,9 +593,9 @@ public class Curve25519 {
 		//   i.e. |h1| <= 1.5*2^58; narrower ranges for h3, h5, h7, h9
 
 		carry[0] = ((h0 + (1 << 25)) >> 26);
-		//System.out.println("h0:" + h0);
-		//System.out.println("carry0:" + carry[0]);
-		//System.out.println("h1 before carry:" + h1);
+		//debug("h0:" + h0);
+		//debug("carry0:" + carry[0]);
+		//debug("h1 before carry:" + h1);
 		h1 += carry[0];
 		h0 -= carry[0] << 26;
 		carry[4] = ((h4 + (1 << 25)) >> 26);
@@ -599,8 +607,8 @@ public class Curve25519 {
 		// |h5| <= 1.51*2^58
 
 		carry[1] = ((h1 + (1 << 24)) >> 25);
-		//System.out.println("h1:" + h1);
-		//System.out.println("carry1:" + carry[1]);
+		//debug("h1:" + h1);
+		//debug("carry1:" + carry[1]);
 		h2 += carry[1];
 		h1 -= carry[1] << 25;
 		carry[5] = ((h5 + (1 << 24)) >> 25);
@@ -815,14 +823,18 @@ public class Curve25519 {
 	public static byte[] scalarMult(byte in[], byte base[]) {
 		byte e[] = in.clone();
 		byte out[];
-		e[0] &= 248;
-		e[31] &= 127;
-		e[31] |= 64;
+		e[0] &= (byte)248;
+		e[31] &= (byte)127;
+		e[31] |= (byte)64;
 
 		FieldElement x1 = new FieldElement(base);
+		debug("x1", x1);
 		FieldElement x2 = FieldElement.ONE();
+		debug("x2", x2);
 		FieldElement x3 = new FieldElement(x1);
+		debug("x3", x3);
 		FieldElement z3 = FieldElement.ONE();
+		debug("z3", z3);
 		FieldElement z2 = FieldElement.ZERO(); // this isn't in the orig code
 
 		long swap = 0;
@@ -831,73 +843,77 @@ public class Curve25519 {
 			long b = e[pos/8] >> (pos&7);
 			b &= 1;
 			swap ^= b;
-			//System.out.println("swap "+ swap);
+			debug("swap", swap);
 			feCSwap(x2, x3, swap);
-			//System.out.println("x2 " + x2);
-			//System.out.println("x3 "+ x3);
+			debug("x2", x2);
+			debug("x3", x3);
 			feCSwap(z2, z3, swap);
-			//System.out.println("z2 " + z2);
-			//System.out.println("z3 "+ z3);
+			debug("z2", z2);
+			debug("z3", z3);
 			swap = b;
 
 			FieldElement tmp0 = feSub(x3, z3);
-			//System.out.println("tmp0 "+ tmp0);
+			debug("tmp0", tmp0);
 			FieldElement tmp1 = feSub(x2, z2);
-			//System.out.println("tmp1 "+ tmp1);
+			debug("tmp1", tmp1);
 			x2 = feAdd(x2, z2);
-			//System.out.println("x2 "+ x2);
+			debug("x2", x2);
 			z2 = feAdd(x3, z3);
-			//System.out.println("z2 "+ z2);
+			debug("z2", z2);
 			z3 = feMul(tmp0, x2);
-			//System.out.println("z3 "+ z3);
+			debug("z3", z3);
 			z2 = feMul(z2, tmp1);
-			//System.out.println("z2 "+ z2);
+			debug("z2", z2);
 			tmp0 = feSquare(tmp1);
-			//System.out.println("tmp0 "+ tmp0);
+			debug("tmp0", tmp0);
 			tmp1 = feSquare(x2);
-			//System.out.println("tmp1 "+ tmp1);
+			debug("tmp1", tmp1);
 			x3 = feAdd(z3, z2);
-			//System.out.println("x3 "+ x3);
+			debug("x3", x3);
 			z2 = feSub(z3, z2);
-			//System.out.println("z2 "+ z2);
+			debug("z2", z2);
 			x2 = feMul(tmp1, tmp0);
-			//System.out.println("x2 "+ x2);
+			debug("x2", x2);
 			tmp1 = feSub(tmp1, tmp0);
-			//System.out.println("tmp1 "+ tmp1);
+			debug("tmp1", tmp1);
 			z2 = feSquare(z2);
-			//System.out.println("z2 "+ z2);
+			debug("z2", z2);
 			z3 = feMul121666(tmp1);
-			//System.out.println("z3 "+ z3);
+			debug("z3", z3);
 			x3 = feSquare(x3);
-			//System.out.println("x3 "+ x3);
+			debug("x3", x3);
 			tmp0 = feAdd(tmp0, z3);
-			//System.out.println("tmp0 "+ tmp0);
+			debug("tmp0", tmp0);
 			z3 = feMul(x1, z2);
-			//System.out.println("z3 "+ z3);
+			debug("z3", z3);
 			z2 = feMul(tmp1, tmp0);
-			//System.out.println("z2 "+ z2);
+			debug("z2", z2);
 			//if(pos < 200) break;
 		}
 
-		//System.out.println("x2 " + x2);
-		//System.out.println("x3 "+ x3);
+		debug("x2", x2);
+		debug("x3", x3);
 		feCSwap(x2, x3, swap);
-		//System.out.println("x2 " + x2);
-		//System.out.println("x3 "+ x3);
+		debug("x2", x2);
+		debug("x3", x3);
 		feCSwap(z2, z3, swap);
-		//System.out.println("z2 " + z2);
-		//System.out.println("z3 "+ z3);
+		debug("z2", z2);
+		debug("z3", z3);
 
 		z2 = feInvert(z2);
-		//System.out.println("z2 " + z2);
+		debug("z2", z2);
 		x2 = feMul(x2, z2);
-		//System.out.println("x2 " + x2);
+		debug("x2", x2);
 		out = x2.toBytes();
-		//System.out.println("out " + DatatypeConverter.printHexBinary(out).toLowerCase());
+		debug("out", DatatypeConverter.printHexBinary(out).toLowerCase());
 		return out;
 	}
 
 	public static byte[] scalarBaseMult(byte in[]) {
 		return scalarMult(in, basePoint);
+	}
+
+	private static void debug(String name, Object x){
+		//System.out.println(name + " " + x);
 	}
 }

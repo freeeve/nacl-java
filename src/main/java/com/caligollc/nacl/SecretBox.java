@@ -14,6 +14,8 @@ public class SecretBox {
 		for(int i = 0; i < hNonce.length; i++) {
 			hNonce[i] = nonce[i];
 		}
+		//Util.printHex("hNonce", hNonce);
+		//Util.printHex("key", key);
 		byte newSubKey[] = Salsa.HSalsa20(hNonce, key, Salsa.SIGMA);
 		for(int i = 0; i < subKey.length; i++) {
 			subKey[i] = newSubKey[i];
@@ -75,7 +77,7 @@ public class SecretBox {
 
 		// Now encrypt the rest.
 		counter[8] = 1;
-		byte out[] = Salsa.XORKeyStream(message, counter, subKey);
+		byte out[] = Salsa.XORKeyStream(restmessage, counter, subKey);
 		for(int i = 0; i < ret.length-(firstMessageBlock.length+Poly1305.TAG_SIZE); i++) {
 			ret[i+firstMessageBlock.length+Poly1305.TAG_SIZE] = out[i];
 		}
@@ -103,8 +105,15 @@ public class SecretBox {
 		// Salsa20 works with 64-byte blocks, we also generate 32 bytes of
 		// keystream as a side effect.
 		byte firstBlock[] = new byte[64];
+		for(int i = 0; i < firstBlock.length; i++) {
+			firstBlock[i] = 0;
+		}
+		//Util.printHex("counter", counter);
+		//Util.printHex("subKey", subKey);
+		//Util.printHex("firstBlock", firstBlock);
 		firstBlock = Salsa.XORKeyStream(firstBlock, counter, subKey);
 
+		//Util.printHex("firstBlock", firstBlock);
 		byte poly1305Key[] = new byte[32];
 		for (int i = 0; i < poly1305Key.length; i++) {
 			poly1305Key[i] = firstBlock[i];
@@ -118,6 +127,9 @@ public class SecretBox {
 		for(int i = 0; i < cipher.length; i++) {
 			cipher[i] = box[i + Poly1305.TAG_SIZE];
 		}
+		//Util.printHex("tag", tag);
+		//Util.printHex("cipher", cipher);
+		//Util.printHex("poly1305Key", poly1305Key);
 		if (!Poly1305.verify(tag, cipher, poly1305Key)) {
 			throw new NaclException("not valid");
 		}
@@ -138,13 +150,14 @@ public class SecretBox {
 		for  (int i = 0; i < firstMessageBlock.length; i++) {
 			ret[i] = (byte)(firstBlock[32+i] ^ firstMessageBlock[i]);
 		}
+		//Util.printHex("ret", ret);
 
 		counter[8] = 1;
-		//Util.printHex("box", box);
-		byte newbox[] = new byte[box.length - firstMessageBlock.length - OVERHEAD];
+		byte newbox[] = new byte[box.length - (firstMessageBlock.length + OVERHEAD)];
 		for(int i=0; i < newbox.length; i++) {
 			newbox[i] = box[i+firstMessageBlock.length+OVERHEAD];
 		}
+		//Util.printHex("box", newbox);
 		byte rest[] = Salsa.XORKeyStream(newbox, counter, subKey);
 		// Now decrypt the rest.
 		//Util.printHex("rest", rest);

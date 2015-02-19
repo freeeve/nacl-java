@@ -2,9 +2,7 @@ package com.caligollc.nacl;
 
 import org.junit.Test;
 
-import javax.xml.bind.DatatypeConverter;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created by wfreeman on 2/11/15.
@@ -50,9 +48,9 @@ public class Salsa20Test {
 		byte outResult[] = {0x00, 0x2d, 0x45, 0x13, (byte)0x84, 0x3f, (byte)0xc2, 0x40, (byte)0xc4, 0x01, (byte)0xe5, 0x41};
 		byte in[] = "Hello world!".getBytes();
 		byte out[];
-		System.out.println("in " + DatatypeConverter.printHexBinary(in));
+		//System.out.println("in " + DatatypeConverter.printHexBinary(in));
 		out = Salsa20.XORKeyStream(in, nonce, key);
-		System.out.println("out " + DatatypeConverter.printHexBinary(out));
+		//System.out.println("out " + DatatypeConverter.printHexBinary(out));
 		assertArrayEquals(outResult, out);
 	}
 

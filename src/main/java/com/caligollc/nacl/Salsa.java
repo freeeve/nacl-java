@@ -227,11 +227,13 @@ public class Salsa {
 		byte block[];
 		byte counterCopy[] =  counter.clone();
 
+		int count = 0;
 		while (in.length > 64) {
+			//Util.printHex("out", out);
 			block = core(counterCopy, key, SIGMA);
 			for (int i = 0; i < block.length; i++) {
 				byte x = block[i];
-				out[i] = (byte)(in[i] ^ x);
+				out[i+64*count] = (byte)(in[i] ^ x);
 			}
 			long u = 1;
 			for (int i = 8; i < 16; i++) {
@@ -239,121 +241,180 @@ public class Salsa {
 				counterCopy[i] = (byte)(u);
 				u >>= 8;
 			}
+			//Util.printHex("in", in);
 			byte temp[] = in.clone();
 			in = new byte[in.length - 64];
-			for(int i = 0; i < in.length - 64; i++) {
+			for(int i = 0; i < in.length; i++) {
 				in[i] = temp[i+64];
 			}
-			temp = out.clone();
-			out = new byte[out.length - 64];
-			for(int i = 0; i < out.length - 64; i++) {
-				out[i] = temp[i+64];
-			}
+			//Util.printHex("in", in);
+
+			count++;
 		}
+		//Util.printHex("out", out);
 
 		if (in.length > 0) {
 			block = core(counterCopy, key, SIGMA);
+			//Util.printHex("in", in);
+			//Util.printHex("block", block);
+
 			for (int i = 0; i < in.length; i++) {
-				byte v = in[i];
-				out[i] = (byte)(v ^ block[i]);
+				out[i+count*64] = (byte)(in[i] ^ block[i]);
+				//Util.printHex("out", out);
 			}
 		}
+		//Util.printHex("out", out);
+
 		return out;
+	}
+
+	public static void debug(String name, long x) {
+		//System.out.println(name + " " + x);
 	}
 
 	// HSalsa20 applies the HSalsa20 core function to a 16-byte input in, 32-byte
 	// key k, and 16-byte constant c, and returns the result as the 32-byte array
 	// out.
 	public static byte[] HSalsa20(byte[] in, byte[] k, byte[] c) {
-		long x0 = (long) c[0] | (long) c[1] << 8 | (long) c[2] << 16 | (long) c[3] << 24;
-		long x1 = (long) k[0] | (long) k[1] << 8 | (long) k[2] << 16 | (long) k[3] << 24;
-		long x2 = (long) k[4] | (long) k[5] << 8 | (long) k[6] << 16 | (long) k[7] << 24;
-		long x3 = (long) k[8] | (long) k[9] << 8 | (long) k[10] << 16 | (long) k[11] << 24;
-		long x4 = (long) k[12] | (long) k[13] << 8 | (long) k[14] << 16 | (long) k[15] << 24;
-		long x5 = (long) c[4] | (long) c[5] << 8 | (long) c[6] << 16 | (long) c[7] << 24;
-		long x6 = (long) in[0] | (long) in[1] << 8 | (long) in[2] << 16 | (long) in[3] << 24;
-		long x7 = (long) in[4] | (long) in[5] << 8 | (long) in[6] << 16 | (long) in[7] << 24;
-		long x8 = (long) in[8] | (long) in[9] << 8 | (long) in[10] << 16 | (long) in[11] << 24;
-		long x9 = (long) in[12] | (long) in[13] << 8 | (long) in[14] << 16 | (long) in[15] << 24;
-		long x10 = (long) c[8] | (long) c[9] << 8 | (long) c[10] << 16 | (long) c[11] << 24;
-		long x11 = (long) k[16] | (long) k[17] << 8 | (long) k[18] << 16 | (long) k[19] << 24;
-		long x12 = (long) k[20] | (long) k[21] << 8 | (long) k[22] << 16 | (long) k[23] << 24;
-		long x13 = (long) k[24] | (long) k[25] << 8 | (long) k[26] << 16 | (long) k[27] << 24;
-		long x14 = (long) k[28] | (long) k[29] << 8 | (long) k[30] << 16 | (long) k[31] << 24;
-		long x15 = (long) c[12] | (long) c[13] << 8 | (long) c[14] << 16 | (long) c[15] << 24;
+		long x0 = mask(c[0]) | mask(c[1]) << 8 | mask(c[2]) << 16 | mask(c[3]) << 24;
+		long x1 = mask(k[0]) | mask(k[1]) << 8 | mask(k[2]) << 16 | mask(k[3]) << 24;
+		long x2 = mask(k[4]) | mask(k[5]) << 8 | mask(k[6]) << 16 | mask(k[7]) << 24;
+		long x3 = mask(k[8]) | mask(k[9]) << 8 | mask(k[10]) << 16 | mask(k[11]) << 24;
+		long x4 = mask(k[12]) | mask(k[13]) << 8 | mask(k[14]) << 16 | mask(k[15]) << 24;
+		long x5 = mask(c[4]) | mask(c[5]) << 8 | mask(c[6]) << 16 | mask(c[7]) << 24;
+		long x6 = mask(in[0]) | mask(in[1]) << 8 | mask(in[2]) << 16 | mask(in[3]) << 24;
+		long x7 = mask(in[4]) | mask(in[5]) << 8 | mask(in[6]) << 16 | mask(in[7]) << 24;
+		long x8 = mask(in[8]) | mask(in[9]) << 8 | mask(in[10]) << 16 | mask(in[11]) << 24;
+		long x9 = mask(in[12]) | mask(in[13]) << 8 | mask(in[14]) << 16 | mask(in[15]) << 24;
+		long x10 = mask(c[8]) | mask(c[9]) << 8 | mask(c[10]) << 16 | mask(c[11]) << 24;
+		long x11 = mask(k[16]) | mask(k[17]) << 8 | mask(k[18]) << 16 | mask(k[19]) << 24;
+		long x12 = mask(k[20]) | mask(k[21]) << 8 | mask(k[22]) << 16 | mask(k[23]) << 24;
+		long x13 = mask(k[24]) | mask(k[25]) << 8 | mask(k[26]) << 16 | mask(k[27]) << 24;
+		long x14 = mask(k[28]) | mask(k[29]) << 8 | mask(k[30]) << 16 | mask(k[31]) << 24;
+		long x15 = mask(c[12]) | mask(c[13]) << 8 | mask(c[14]) << 16 | mask(c[15]) << 24;
+
+		debug("x0", x0);
+		debug("x1", x1);
+		debug("x2", x2);
+		debug("x3", x3);
+		debug("x4", x4);
+		debug("x5", x5);
+		debug("x6", x6);
+		debug("x7", x7);
+		debug("x8", x8);
+		debug("x9", x9);
+		debug("x10", x10);
+		debug("x11", x11);
+		debug("x12", x12);
+		debug("x13", x13);
+		debug("x14", x14);
+		debug("x15", x15);
 
 		long mask = 0xFFFFFFFFl;
 		for (int i = 0; i < 20; i += 2) {
 			long u = mask & (x0 + x12);
+			debug("u", u);
 			x4 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x4 + x0);
+			debug("u", u);
 			x8 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x8 + x4);
+			debug("u", u);
 			x12 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x12 + x8);
+			debug("u", u);
 			x0 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x5 + x1);
+			debug("u", u);
 			x9 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x9 + x5);
+			debug("u", u);
 			x13 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x13 + x9);
+			debug("u", u);
 			x1 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x1 + x13);
+			debug("u", u);
 			x5 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x10 + x6);
+			debug("u", u);
 			x14 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x14 + x10);
+			debug("u", u);
 			x2 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x2 + x14);
+			debug("u", u);
 			x6 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x6 + x2);
+			debug("u", u);
 			x10 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x15 + x11);
+			debug("u", u);
 			x3 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x3 + x15);
+			debug("u", u);
 			x7 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x7 + x3);
+			debug("u", u);
 			x11 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x11 + x7);
+			debug("u", u);
 			x15 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x0 + x3);
+			debug("u", u);
 			x1 ^= mask & (u << 7 | u >>> (32 - 7));
+			debug("u", u);
 			u = mask & (x1 + x0);
+			debug("u", u);
 			x2 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x2 + x1);
+			debug("u", u);
 			x3 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x3 + x2);
+			debug("u", u);
 			x0 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x5 + x4);
+			debug("u", u);
 			x6 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x6 + x5);
+			debug("u", u);
 			x7 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x7 + x6);
+			debug("u", u);
 			x4 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x4 + x7);
+			debug("u", u);
 			x5 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x10 + x9);
+			debug("u", u);
 			x11 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x11 + x10);
+			debug("u", u);
 			x8 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x8 + x11);
+			debug("u", u);
 			x9 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x9 + x8);
+			debug("u", u);
 			x10 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x15 + x14);
+			debug("u", u);
 			x12 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x12 + x15);
+			debug("u", u);
 			x13 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x13 + x12);
+			debug("u", u);
 			x14 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x14 + x13);
+			debug("u", u);
 			x15 ^= mask & (u << 18 | u >>> (32 - 18));
 		}
 

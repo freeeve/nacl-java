@@ -1,26 +1,36 @@
 package com.caligollc.nacl;
 
 import javax.xml.bind.DatatypeConverter;
+import java.security.SecureRandom;
 
-/**
- * Created by wfreeman on 2/11/15.
- */
 public class Box {
 	private byte privKey[];
 	private byte pubKey[];
 	private byte sharedKey[];
 	private byte zeros[] = new byte[16];
 
+	public static class KeyPair {
+		public byte pubKey[];
+		public byte privKey[];
+	}
+
+	public static KeyPair generate() {
+		KeyPair kp = new KeyPair();
+		SecureRandom random = new SecureRandom();
+		kp.privKey = new byte[32];
+		random.nextBytes(kp.privKey);
+		kp.pubKey = Curve25519.scalarBaseMult(kp.privKey);
+		return kp;
+	}
+
 	/**
 	 * Box convenience constructor takes base64 of public / private key
 	 *
 	 * @param peerPublicKey base64 encoding of public key
-	 * @param privateKey base64 encoding of private key
+	 * @param privateKey    base64 encoding of private key
 	 */
 	public Box(String peerPublicKey, String privateKey) {
-		privKey = DatatypeConverter.parseBase64Binary(privateKey);
-		pubKey = DatatypeConverter.parseBase64Binary(peerPublicKey);
-		sharedKey = precompute(pubKey, privKey);
+		this(DatatypeConverter.parseBase64Binary(privateKey), DatatypeConverter.parseBase64Binary(peerPublicKey));
 	}
 
 	public Box(byte[] peerPublicKey, byte[] privateKey) {
@@ -31,12 +41,23 @@ public class Box {
 
 	private byte[] precompute(byte[] peersPublicKey, byte[] privateKey) {
 		byte sharedKey[];
+		//Util.printHex("peersPublicKey", peersPublicKey);
+		//Util.printHex("privateKey", privateKey);
 		sharedKey = Curve25519.scalarMult(privateKey, peersPublicKey);
+		//Util.printHex("sharedKey", sharedKey);
 		sharedKey = Salsa.HSalsa20(zeros, sharedKey, Salsa.SIGMA);
 		return sharedKey;
 	}
 
 	public byte[] open(String box, String nonce) throws NaclException {
 		return SecretBox.open(DatatypeConverter.parseBase64Binary(box), DatatypeConverter.parseBase64Binary(nonce), sharedKey);
+	}
+
+	public byte[] seal(byte message[], byte nonce[]) {
+		return SecretBox.seal(message, nonce, sharedKey);
+	}
+
+	public byte[] open(byte box[], byte nonce[]) throws NaclException {
+		return SecretBox.open(box, nonce, sharedKey);
 	}
 }
