@@ -53,7 +53,12 @@ public class SecretBox {
             for (int i = 0; i < 32; i++) {
                 firstMessageBlock[i] = message[i];
             }
+        } else { // for shorter messages
+            for (int i = 0; i < message.length; i++) {
+                firstMessageBlock[i] = message[i];
+            }
         }
+
 
         for (int i = 0; i < firstMessageBlock.length; i++) {
             ret[i + Poly1305.TAG_SIZE] = (byte) (firstBlock[32 + i] ^ firstMessageBlock[i]);
