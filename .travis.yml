@@ -1,5 +1,2 @@
-language: android
-android:
-  components:
-    - android-19
-    - sys-img-armeabi-v7a-android-19
+language: java
+jdk: openjdk6
