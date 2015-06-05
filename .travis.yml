@@ -1,4 +1,5 @@
-language: java
-
-jdk:
-  - oraclejdk7
+language: android
+android:
+  components:
+    - android-19
+    - sys-img-armeabi-v7a-android-19
