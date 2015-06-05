@@ -1,5 +1,8 @@
 language: java
 jdk: openjdk7
 
+script:
+  - mvn test -Djacoco.skip
+
 after_success:
   - mvn clean test jacoco:report coveralls:report
