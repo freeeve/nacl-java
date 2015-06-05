@@ -6,7 +6,7 @@ A port of [NaCl](http://nacl.cr.yp.to/) to Java. I had too much trouble getting 
 
 ## TODO
 
-* remove java 7 stdlib use
+* remove java 7 stdlib use (the dataconverter stuff isn't in android's java)
 * improve readme
 * improve javadocs
 * maven repo?
