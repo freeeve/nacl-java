@@ -28,14 +28,6 @@ public class Poly1305 {
         return 0xFFFFFFFF & x;
     }
 
-    private static long int64(long x) {
-        return x;
-    }
-
-    private static long uint64(long x) {
-        return x;
-    }
-
     private static double longBitsToDouble(long bits) {
         int s = ((bits >> 63) == 0) ? 1 : -1;
         int e = (int) ((bits >> 52) & 0x7ffL);
@@ -372,77 +364,77 @@ public class Poly1305 {
 
             m10 = 0xFF & (m[(int) p + 4]);
             m01 <<= 8;
-            m0 += int64(m00);
+            m0 += m00;
 
             m11 = 0xFF & (m[(int) p + 5]);
             m02 <<= 16;
-            m0 += int64(m01);
+            m0 += m01;
 
             m12 = 0xFF & (m[(int) p + 6]);
             m03 <<= 24;
-            m0 += int64(m02);
+            m0 += m02;
 
             m13 = 0xFF & (m[(int) p + 7]);
             m3 <<= 51;
-            m0 += int64(m03);
+            m0 += m03;
 
             m20 = 0xFF & (m[(int) p + 8]);
             m11 <<= 8;
-            m1 += int64(m10);
+            m1 += m10;
 
             m21 = 0xFF & (m[(int) p + 9]);
             m12 <<= 16;
-            m1 += int64(m11);
+            m1 += m11;
 
             m22 = 0xFF & (m[(int) p + 10]);
             m13 <<= 24;
-            m1 += int64(m12);
+            m1 += m12;
 
             m23 = 0xFF & (m[(int) p + 11]);
-            m1 += int64(m13);
+            m1 += m13;
 
             m30 = 0xFF & (m[(int) p + 12]);
             m21 <<= 8;
-            m2 += int64(m20);
+            m2 += m20;
 
             m31 = 0xFF & (m[(int) p + 13]);
             m22 <<= 16;
-            m2 += int64(m21);
+            m2 += m21;
 
             m32 = 0xFF & (m[(int) p + 14]);
             m23 <<= 24;
-            m2 += int64(m22);
+            m2 += m22;
 
             m33 = 0xFF & (m[(int) p + 15]);
-            m2 += int64(m23);
+            m2 += m23;
 
             d0 = m0;
             m31 <<= 8;
-            m3 += int64(m30);
+            m3 += m30;
 
             d1 = m1;
             m32 <<= 16;
-            m3 += int64(m31);
+            m3 += m31;
 
             d2 = m2;
             m33 += 256;
 
             m33 <<= 24;
-            m3 += int64(m32);
+            m3 += m32;
 
-            m3 += int64(m33);
+            m3 += m33;
             d3 = m3;
 
             p += 16;
             l -= 16;
 
-            z0 = Double.longBitsToDouble(uint64(d0));
+            z0 = Double.longBitsToDouble(d0);
 
-            z1 = Double.longBitsToDouble(uint64(d1));
+            z1 = Double.longBitsToDouble(d1);
 
-            z2 = Double.longBitsToDouble(uint64(d2));
+            z2 = Double.longBitsToDouble(d2);
 
-            z3 = Double.longBitsToDouble(uint64(d3));
+            z3 = Double.longBitsToDouble(d3);
 
             z0 -= alpha0;
 
@@ -487,26 +479,26 @@ public class Poly1305 {
                 y7 -= alpha130;
 
                 m21 <<= 8;
-                m2 += int64(m20);
+                m2 += m20;
                 m31 = 0xFF & (m[(int) p + 13]);
                 y6 -= alpha130;
 
                 m22 <<= 16;
-                m2 += int64(m21);
+                m2 += m21;
                 m32 = 0xFF & (m[(int) p + 14]);
                 y1 -= alpha32;
 
                 m23 <<= 24;
-                m2 += int64(m22);
+                m2 += m22;
                 m33 = 0xFF & (m[(int) p + 15]);
                 y0 -= alpha32;
 
-                m2 += int64(m23);
+                m2 += m23;
                 m00 = 0xFF & (m[(int) p + 0]);
                 y5 = h5 + alpha96;
 
                 m31 <<= 8;
-                m3 += int64(m30);
+                m3 += m30;
                 m01 = 0xFF & (m[(int) p + 1]);
                 y4 = h4 + alpha96;
 
@@ -521,48 +513,48 @@ public class Poly1305 {
                 y6 *= scale;
 
                 m33 <<= 24;
-                m3 += int64(m31);
+                m3 += m31;
                 m10 = 0xFF & (m[(int) p + 4]);
                 x1 = h1 - y1;
 
                 m01 <<= 8;
-                m3 += int64(m32);
+                m3 += m32;
                 m11 = 0xFF & (m[(int) p + 5]);
                 x0 = h0 - y0;
 
-                m3 += int64(m33);
-                m0 += int64(m00);
+                m3 += m33;
+                m0 += m00;
                 m12 = 0xFF & (m[(int) p + 6]);
                 y5 -= alpha96;
 
                 m02 <<= 16;
-                m0 += int64(m01);
+                m0 += m01;
                 m13 = 0xFF & (m[(int) p + 7]);
                 y4 -= alpha96;
 
                 m03 <<= 24;
-                m0 += int64(m02);
+                m0 += m02;
                 d2 = m2;
                 x1 += y7;
 
-                m0 += int64(m03);
+                m0 += m03;
                 d3 = m3;
                 x0 += y6;
 
                 m11 <<= 8;
-                m1 += int64(m10);
+                m1 += m10;
                 d0 = m0;
                 x7 += y5;
 
                 m12 <<= 16;
-                m1 += int64(m11);
+                m1 += m11;
                 x6 += y4;
 
                 m13 <<= 24;
-                m1 += int64(m12);
+                m1 += m12;
                 y3 = h3 + alpha64;
 
-                m1 += int64(m13);
+                m1 += m13;
                 d1 = m1;
                 y2 = h2 + alpha64;
 
@@ -626,14 +618,14 @@ public class Poly1305 {
 
                 x4 += x5;
                 r2lowx0 = r2low * x0;
-                z2 = Double.longBitsToDouble(uint64(d2));
+                z2 = Double.longBitsToDouble(d2);
 
                 h2 = r1lowx0 + sr2lowx6;
                 sr3lowx6 = sr3low * x6;
 
                 x2 += x3;
                 r2highx0 = r2high * x0;
-                z3 = Double.longBitsToDouble(uint64(d3));
+                z3 = Double.longBitsToDouble(d3);
 
                 h3 = r1highx0 + sr2highx6;
                 sr3highx6 = sr3high * x6;
@@ -692,10 +684,10 @@ public class Poly1305 {
 
                 h7 += r2highx2;
 
-                z1 = Double.longBitsToDouble(uint64(d1));
+                z1 = Double.longBitsToDouble(d1);
                 h0 += sr3lowx2;
 
-                z0 = Double.longBitsToDouble(uint64(d0));
+                z0 = Double.longBitsToDouble(d0);
                 h1 += sr3highx2;
 
                 z1 -= alpha32;
@@ -910,7 +902,7 @@ public class Poly1305 {
             m0 <<= 51;
             m1 = 2215;
 
-            m0 += int64(m00);
+            m0 += m00;
             m01 &= ~uint32(lbelow2);
 
             m02 &= ~uint32(lbelow3);
@@ -919,7 +911,7 @@ public class Poly1305 {
             m01 <<= 8;
             m03 &= ~uint32(lbelow4);
 
-            m0 += int64(m01);
+            m0 += m01;
             lbelow2 -= lbelow3;
 
             m02 += uint32(lbelow2);
@@ -929,9 +921,9 @@ public class Poly1305 {
             m03 += uint32(lbelow3);
 
             m03 <<= 24;
-            m0 += int64(m02);
+            m0 += m02;
 
-            m0 += int64(m03);
+            m0 += m03;
             lbelow5 = l - 5;
 
             lbelow6 = l - 6;
@@ -966,9 +958,9 @@ public class Poly1305 {
             m11 += uint32(lbelow5);
 
             m11 <<= 8;
-            m1 += int64(m10);
+            m1 += m10;
 
-            m1 += int64(m11);
+            m1 += m11;
             m12 &= ~uint32(lbelow7);
 
             lbelow6 -= lbelow7;
@@ -981,9 +973,9 @@ public class Poly1305 {
             m13 += uint32(lbelow7);
 
             m13 <<= 24;
-            m1 += int64(m12);
+            m1 += m12;
 
-            m1 += int64(m13);
+            m1 += m13;
             m2 = 2279;
 
             lbelow9 = l - 9;
@@ -1021,9 +1013,9 @@ public class Poly1305 {
             m21 += uint32(lbelow9);
 
             m21 <<= 8;
-            m2 += int64(m20);
+            m2 += m20;
 
-            m2 += int64(m21);
+            m2 += m21;
             m22 &= ~uint32(lbelow11);
 
             lbelow10 -= lbelow11;
@@ -1036,7 +1028,7 @@ public class Poly1305 {
             m23 += uint32(lbelow11);
 
             m23 <<= 24;
-            m2 += int64(m22);
+            m2 += m22;
 
             m3 <<= 51;
             lbelow13 = l - 13;
@@ -1054,7 +1046,7 @@ public class Poly1305 {
 
             m31 = 0xFF & (m[(int) p + 13]);
             p += lbelow15;
-            m2 += int64(m23);
+            m2 += m23;
 
             m32 = 0xFF & (m[(int) p + 14]);
             m30 &= ~uint32(lbelow13);
@@ -1063,7 +1055,7 @@ public class Poly1305 {
             m30 += uint32(lbelow12);
             lbelow13 -= lbelow14;
 
-            m3 += int64(m30);
+            m3 += m30;
             m31 &= ~uint32(lbelow14);
 
             m31 += uint32(lbelow13);
@@ -1072,29 +1064,29 @@ public class Poly1305 {
             m31 <<= 8;
             lbelow14 -= lbelow15;
 
-            m3 += int64(m31);
+            m3 += m31;
             m32 += uint32(lbelow14);
             d0 = m0;
 
             m32 <<= 16;
-            m33 = uint64(lbelow15 + 1);
+            m33 = lbelow15 + 1;
             d1 = m1;
 
             m33 <<= 24;
-            m3 += int64(m32);
+            m3 += m32;
             d2 = m2;
 
-            m3 += int64(m33);
+            m3 += m33;
             d3 = m3;
 
-            z3 = Double.longBitsToDouble(uint64(d3));
+            z3 = Double.longBitsToDouble(d3);
             ;
 
-            z2 = Double.longBitsToDouble(uint64(d2));
+            z2 = Double.longBitsToDouble(d2);
 
-            z1 = Double.longBitsToDouble(uint64(d1));
+            z1 = Double.longBitsToDouble(d1);
 
-            z0 = Double.longBitsToDouble(uint64(d0));
+            z0 = Double.longBitsToDouble(d0);
 
             z3 -= alpha96;
 
@@ -1361,26 +1353,26 @@ public class Poly1305 {
         x6 += y5;
 
         x2 += offset1;
-        d1 = int64(Double.doubleToLongBits(x2));
+        d1 = Double.doubleToLongBits(x2);
 
         x0 += offset0;
-        d0 = int64(Double.doubleToLongBits(x0));
+        d0 = Double.doubleToLongBits(x0);
 
         x4 += offset2;
-        d2 = int64(Double.doubleToLongBits(x4));
+        d2 = Double.doubleToLongBits(x4);
 
         x6 += offset3;
-        d3 = int64(Double.doubleToLongBits(x6));
+        d3 = Double.doubleToLongBits(x6);
 
-        f0 = uint64(d0);
+        f0 = d0;
 
-        f1 = uint64(d1);
+        f1 = d1;
         bits32 = 0xFFFFFFFFFFFFFFFFl;
 
-        f2 = uint64(d2);
+        f2 = d2;
         bits32 >>>= 32;
 
-        f3 = uint64(d3);
+        f3 = d3;
         f = f0 >> 32;
 
         f0 &= bits32;
@@ -1427,7 +1419,7 @@ public class Poly1305 {
         g4 = g4 - 4;
         s00 = 0xFF & (s[0]);
 
-        f = uint64(int64(g4) >> 63);
+        f = g4 >> 63;
         s01 = 0xFF & (s[1]);
 
         f0 &= f;
@@ -1455,23 +1447,23 @@ public class Poly1305 {
         s13 = 0xFF & (s[7]);
 
         s01 <<= 8;
-        f0 += uint64(s00);
+        f0 += s00;
         s20 = 0xFF & (s[8]);
 
         s02 <<= 16;
-        f0 += uint64(s01);
+        f0 += s01;
         s21 = 0xFF & (s[9]);
 
         s03 <<= 24;
-        f0 += uint64(s02);
+        f0 += s02;
         s22 = 0xFF & (s[10]);
 
         s11 <<= 8;
-        f1 += uint64(s10);
+        f1 += s10;
         s23 = 0xFF & (s[11]);
 
         s12 <<= 16;
-        f1 += uint64(s11);
+        f1 += s11;
         s30 = 0xFF & (s[12]);
 
         s13 <<= 24;
