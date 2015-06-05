@@ -1,5 +1,5 @@
 language: java
-jdk: openjdk6
+jdk: openjdk7
 
 after_success:
   - mvn clean test jacoco:report coveralls:report
