@@ -1,6 +1,6 @@
 # nacl-java
 
-A port of NaCl to Java. I had too much trouble getting android to build with JNI NaCl, so here you go... certainly not intended for anyone else to use; it's terribly unoptimized and certainly not reviewed by a security professional.
+A port of [NaCl](http://nacl.cr.yp.to/) to Java. I had too much trouble getting android to build with JNI NaCl, so here you go... certainly not intended for anyone else to use; it's terribly unoptimized and certainly not reviewed by a security professional.
 
 ## TODO
 
