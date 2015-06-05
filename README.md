@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/wfreeman/nacl-java.svg?branch=master)](https://travis-ci.org/wfreeman/nacl-java)[![Coverage Status](https://coveralls.io/repos/wfreeman/nacl-java/badge.svg?branch=master)](https://coveralls.io/r/wfreeman/nacl-java?branch=master)
 
-A port of [NaCl](http://nacl.cr.yp.to/) to Java. I had too much trouble getting android to build with JNI NaCl, so here you go... certainly not intended for anyone else to use (but, here it is, in case you find it useful); it's terribly unoptimized and not reviewed by a security professional.
+A port of [NaCl](http://nacl.cr.yp.to/) to Java. I had too much trouble getting android to build with JNI NaCl, so here you go... certainly not intended for anyone else to use (but here it is, in case you find it useful); it's terribly unoptimized and not reviewed by a security professional.
 
 ## minimal viable snippet
 Also available as an [example unit test](https://github.com/wfreeman/nacl-java/blob/master/src/test/java/com/caligochat/nacl/ExampleTest.java).
