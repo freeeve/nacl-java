@@ -4,1544 +4,1544 @@ package com.caligochat.nacl;
  * Created by wfreeman on 2/11/15.
  */
 public class Poly1305 {
-	public static int TAG_SIZE = 16;
-
-	private static double alpham80 = 0.00000000558793544769287109375d;
-	private static double alpham48 = 24.0d;
-	private static double alpham16 = 103079215104.0d;
-	private static double alpha0   = 6755399441055744.0d;
-	private static double alpha18  = 1770887431076116955136.0d;
-	private static double alpha32  = 29014219670751100192948224.0d;
-	private static double alpha50  = 7605903601369376408980219232256.0d;
-	private static double alpha64  = 124615124604835863084731911901282304.0d;
-	private static double alpha82  = 32667107224410092492483962313449748299776.0d;
-	private static double alpha96  = 535217884764734955396857238543560676143529984.0d;
-	private static double alpha112 = 35076039295941670036888435985190792471742381031424.0d;
-	private static double alpha130 = 9194973245195333150150082162901855101712434733101613056.0d;
-	private static double scale    = 0.0000000000000000000000000000000000000036734198463196484624023016788195177431833298649127735047148490821200539357960224151611328125d;
-	private static double offset0  = 6755408030990331.0d;
-	private static double offset1  = 29014256564239239022116864.0d;
-	private static double offset2  = 124615283061160854719918951570079744.0d;
-	private static double offset3  = 535219245894202480694386063513315216128475136.0d;
-
-	private static long uint32(long x) {
-		return 0xFFFFFFFF & x;
-	}
-
-	private static long int64(long x) {
-		return x;
-	}
-
-	private static long uint64(long x) {
-		return x;
-	}
-
-	private static double longBitsToDouble(long bits) {
-		int s = ((bits >> 63) == 0) ? 1 : -1;
-		int e = (int)((bits >> 52) & 0x7ffL);
-		long m = (e == 0) ?
-			(bits & 0xfffffffffffffL) << 1 :
-			(bits & 0xfffffffffffffL) | 0x10000000000000L;
-		return (double)s*(double)m*Math.pow(2, e-1075);
-	}
-
-	public static boolean verify(byte mac[], byte m[], byte key[]) {
-		byte tmp[] = sum(m, key);
-		//Util.printHex("tmp", tmp);
-		//Util.printHex("mac", mac);
-		return Subtle.constantTimeCompare(tmp, mac);
-	}
-
-	// Sum generates an authenticator for m using a one-time key and puts the
-	// 16-byte result into out. Authenticating two different messages with the same
-	// key allows an attacker to forge messages at will.
-	public static byte[] sum(byte m[], byte key[]) {
-		byte r[] = key.clone();
-		byte s[] = new byte[16];
-		for(int i = 0; i < s.length; i++) {
-			s[i] = key[i+16];
-		}
-
-		double y7;
-		double y6;
-		double y1;
-		double	y0        ;
-		double	y5        ;
-		double	y4        ;
-		double	x7        ;
-		double	x6        ;
-		double	x1        ;
-		double	x0        ;
-		double	y3        ;
-		double	y2        ;
-		double	x5        ;
-		double	r3lowx0   ;
-		double	x4        ;
-		double	r0lowx6   ;
-		double	x3        ;
-		double	r3highx0  ;
-		double	x2        ;
-		double	r0highx6  ;
-		double	r0lowx0   ;
-		double	sr1lowx6  ;
-		double	r0highx0  ;
-		double	sr1highx6 ;
-		double	sr3low    ;
-		double	r1lowx0   ;
-		double	sr2lowx6  ;
-		double	r1highx0  ;
-		double	sr2highx6 ;
-		double	r2lowx0   ;
-		double	sr3lowx6  ;
-		double	r2highx0  ;
-		double	sr3highx6 ;
-		double	r1highx4  ;
-		double	r1lowx4   ;
-		double	r0highx4  ;
-		double	r0lowx4   ;
-		double	sr3highx4 ;
-		double	sr3lowx4  ;
-		double	sr2highx4 ;
-		double	sr2lowx4  ;
-		double	r0lowx2   ;
-		double	r0highx2  ;
-		double	r1lowx2   ;
-		double	r1highx2  ;
-		double	r2lowx2   ;
-		double	r2highx2  ;
-		double	sr3lowx2  ;
-		double	sr3highx2 ;
-		double	z0        ;
-		double	z1        ;
-		double	z2        ;
-		double	z3        ;
-		long	m0        ;
-		long	m1        ;
-		long	m2        ;
-		long	m3        ;
-		long	m00       ;//uint32
-		long	m01       ;//uint32
-		long	m02       ;//uint32
-		long	m03       ;//uint32
-		long	m10       ;//uint32
-		long	m11       ;//uint32
-		long	m12       ;//uint32
-		long	m13       ;//uint32
-		long	m20       ;//uint32
-		long	m21       ;//uint32
-		long	m22       ;//uint32
-		long	m23       ;//uint32
-		long	m30       ;//uint32
-		long	m31       ;//uint32
-		long	m32       ;//uint32
-		long	m33       ;//uint64
-		long	lbelow2   ;//int32
-		long	lbelow3   ;//int32
-		long	lbelow4   ;//int32
-		long	lbelow5   ;//int32
-		long	lbelow6   ;//int32
-		long	lbelow7   ;//int32
-		long	lbelow8   ;//int32
-		long	lbelow9   ;//int32
-		long	lbelow10  ;//int32
-		long	lbelow11  ;//int32
-		long	lbelow12  ;//int32
-		long	lbelow13  ;//int32
-		long	lbelow14  ;//int32
-		long	lbelow15  ;//int32
-		long	s00       ;//uint32
-		long	s01       ;//uint32
-		long	s02       ;//uint32
-		long	s03       ;//uint32
-		long	s10       ;//uint32
-		long	s11       ;//uint32
-		long	s12       ;//uint32
-		long	s13       ;//uint32
-		long	s20       ;//uint32
-		long	s21       ;//uint32
-		long	s22       ;//uint32
-		long	s23       ;//uint32
-		long	s30       ;//uint32
-		long	s31       ;//uint32
-		long	s32       ;//uint32
-		long	s33       ;//uint32
-		long	bits32    ;//uint64
-		long	f         ;//uint64
-		long	f0        ;//uint64
-		long	f1        ;//uint64
-		long	f2        ;//uint64
-		long	f3        ;//uint64
-		long	f4        ;//uint64
-		long	g         ;//uint64
-		long g0;//uint64
-		long	g1;//uint64
-		long	g2        ;//uint64
-		long g3;//uint64
-		long	g4;//uint64
-
-		long p = 0;
-
-		int l = m.length;
-
-		long r00 = 0xFF & r[0];
-		long r01 = 0xFF & r[1];
-		long r02 = 0xFF & r[2];
-		long r0 = 2151;
-
-		long r03 = 0xFF & r[3];
-		r03 &= 15;
-		r0 <<= 51;
-
-		long r10 = 0xFF & r[4];
-		r10 &= 252;
-		r01 <<= 8;
-		r0 += r00;
-
-		long r11 = 0xFF & r[5];
-		r02 <<= 16;
-		r0 += r01;
-
-		long r12 = 0xFF & r[6];
-		r03 <<= 24;
-		r0 += r02;
-
-		long r13 = 0xFF & r[7];
-		r13 &= 15;
-		long r1 = 2215;
-		r0 += r03;
-
-		long d0 = r0;
-		r1 <<= 51;
-		long r2 = 2279;
-
-		long r20 = 0xFF & r[8];
-		r20 &= 252;
-		r11 <<= 8;
-		r1 += r10;
-
-		long r21 = 0xFF & r[9];
-		r12 <<= 16;
-		r1 += r11;
-
-		long r22 = 0xFF & r[10];
-		r13 <<= 24;
-		r1 += r12;
-
-		long r23 = 0xFF & r[11];
-		r23 &= 15;
-		r2 <<= 51;
-		r1 += r13;
-
-		long d1 = r1;
-		r21 <<= 8;
-		r2 += r20;
-
-		long r30 = 0xFF & r[12];
-		r30 &= 252;
-		r22 <<= 16;
-		r2 += r21;
-
-		long r31 = 0xFF & r[13];
-		r23 <<= 24;
-		r2 += r22;
-
-		long r32 = 0xFF & r[14];
-		r2 += r23;
-		long r3 = 2343;
-
-		long d2 = r2;
-		r3 <<= 51;
-
-		long r33 = 0xFF & r[15];
-		r33 &= 15;
-		r31 <<= 8;
-		r3 += r30;
-
-		r32 <<= 16;
-		r3 += r31;
-
-		r33 <<= 24;
-		r3 += r32;
-
-		r3 += r33;
-		double h0 = alpha32 - alpha32;
-
-		long d3 = r3;
-		double h1 = alpha32 - alpha32;
-
-		double h2 = alpha32 - alpha32;
-
-		double h3 = alpha32 - alpha32;
-
-		double h4 = alpha32 - alpha32;
-
-		double r0low = Double.longBitsToDouble(d0);
-		double h5 = alpha32 - alpha32;
-
-		double r1low = longBitsToDouble(d1);
-		double h6 = alpha32 - alpha32;
-
-		double r2low = Double.longBitsToDouble(d2);
-		double h7 = alpha32 - alpha32;
-
-		r0low -= alpha0;
-
-		r1low -= alpha32;
-
-		r2low -= alpha64;
-
-		double r0high = r0low + alpha18;
-
-		double r3low = Double.longBitsToDouble(d3);
-
-		double r1high = r1low + alpha50;
-		double sr1low = scale * r1low;
-
-		double r2high = r2low + alpha82;
-		double sr2low = scale * r2low;
-
-		r0high -= alpha18;
-		double r0high_stack = r0high;
-
-		r3low -= alpha96;
-
-		r1high -= alpha50;
-		double r1high_stack = r1high;
-
-		double sr1high = sr1low + alpham80;
-
-		r0low -= r0high;
-
-		r2high -= alpha82;
-		sr3low = scale * r3low;
-
-		double sr2high = sr2low + alpham48;
-
-		r1low -= r1high;
-		double r1low_stack = r1low;
-
-		sr1high -= alpham80;
-		double sr1high_stack = sr1high;
-
-		r2low -= r2high;
-		double r2low_stack = r2low;
-
-		sr2high -= alpham48;
-		double sr2high_stack = sr2high;
-
-		double r3high = r3low + alpha112;
-		double r0low_stack = r0low;
-
-		sr1low -= sr1high;
-		double sr1low_stack = sr1low;
-
-		double sr3high = sr3low + alpham16;
-		double r2high_stack = r2high;
-
-		sr2low -= sr2high;
-		double sr2low_stack = sr2low;
-
-		r3high -= alpha112;
-		double r3high_stack = r3high;
-
-		sr3high -= alpham16;
-		double sr3high_stack = sr3high;
-
-		r3low -= r3high;
-		double r3low_stack = r3low;
-
-		sr3low -= sr3high;
-		double sr3low_stack = sr3low;
+    public static int TAG_SIZE = 16;
+
+    private static double alpham80 = 0.00000000558793544769287109375d;
+    private static double alpham48 = 24.0d;
+    private static double alpham16 = 103079215104.0d;
+    private static double alpha0 = 6755399441055744.0d;
+    private static double alpha18 = 1770887431076116955136.0d;
+    private static double alpha32 = 29014219670751100192948224.0d;
+    private static double alpha50 = 7605903601369376408980219232256.0d;
+    private static double alpha64 = 124615124604835863084731911901282304.0d;
+    private static double alpha82 = 32667107224410092492483962313449748299776.0d;
+    private static double alpha96 = 535217884764734955396857238543560676143529984.0d;
+    private static double alpha112 = 35076039295941670036888435985190792471742381031424.0d;
+    private static double alpha130 = 9194973245195333150150082162901855101712434733101613056.0d;
+    private static double scale = 0.0000000000000000000000000000000000000036734198463196484624023016788195177431833298649127735047148490821200539357960224151611328125d;
+    private static double offset0 = 6755408030990331.0d;
+    private static double offset1 = 29014256564239239022116864.0d;
+    private static double offset2 = 124615283061160854719918951570079744.0d;
+    private static double offset3 = 535219245894202480694386063513315216128475136.0d;
+
+    private static long uint32(long x) {
+        return 0xFFFFFFFF & x;
+    }
+
+    private static long int64(long x) {
+        return x;
+    }
+
+    private static long uint64(long x) {
+        return x;
+    }
+
+    private static double longBitsToDouble(long bits) {
+        int s = ((bits >> 63) == 0) ? 1 : -1;
+        int e = (int) ((bits >> 52) & 0x7ffL);
+        long m = (e == 0) ?
+                (bits & 0xfffffffffffffL) << 1 :
+                (bits & 0xfffffffffffffL) | 0x10000000000000L;
+        return (double) s * (double) m * Math.pow(2, e - 1075);
+    }
+
+    public static boolean verify(byte mac[], byte m[], byte key[]) {
+        byte tmp[] = sum(m, key);
+        //Util.printHex("tmp", tmp);
+        //Util.printHex("mac", mac);
+        return Subtle.constantTimeCompare(tmp, mac);
+    }
+
+    // Sum generates an authenticator for m using a one-time key and puts the
+    // 16-byte result into out. Authenticating two different messages with the same
+    // key allows an attacker to forge messages at will.
+    public static byte[] sum(byte m[], byte key[]) {
+        byte r[] = key.clone();
+        byte s[] = new byte[16];
+        for (int i = 0; i < s.length; i++) {
+            s[i] = key[i + 16];
+        }
+
+        double y7;
+        double y6;
+        double y1;
+        double y0;
+        double y5;
+        double y4;
+        double x7;
+        double x6;
+        double x1;
+        double x0;
+        double y3;
+        double y2;
+        double x5;
+        double r3lowx0;
+        double x4;
+        double r0lowx6;
+        double x3;
+        double r3highx0;
+        double x2;
+        double r0highx6;
+        double r0lowx0;
+        double sr1lowx6;
+        double r0highx0;
+        double sr1highx6;
+        double sr3low;
+        double r1lowx0;
+        double sr2lowx6;
+        double r1highx0;
+        double sr2highx6;
+        double r2lowx0;
+        double sr3lowx6;
+        double r2highx0;
+        double sr3highx6;
+        double r1highx4;
+        double r1lowx4;
+        double r0highx4;
+        double r0lowx4;
+        double sr3highx4;
+        double sr3lowx4;
+        double sr2highx4;
+        double sr2lowx4;
+        double r0lowx2;
+        double r0highx2;
+        double r1lowx2;
+        double r1highx2;
+        double r2lowx2;
+        double r2highx2;
+        double sr3lowx2;
+        double sr3highx2;
+        double z0;
+        double z1;
+        double z2;
+        double z3;
+        long m0;
+        long m1;
+        long m2;
+        long m3;
+        long m00;//uint32
+        long m01;//uint32
+        long m02;//uint32
+        long m03;//uint32
+        long m10;//uint32
+        long m11;//uint32
+        long m12;//uint32
+        long m13;//uint32
+        long m20;//uint32
+        long m21;//uint32
+        long m22;//uint32
+        long m23;//uint32
+        long m30;//uint32
+        long m31;//uint32
+        long m32;//uint32
+        long m33;//uint64
+        long lbelow2;//int32
+        long lbelow3;//int32
+        long lbelow4;//int32
+        long lbelow5;//int32
+        long lbelow6;//int32
+        long lbelow7;//int32
+        long lbelow8;//int32
+        long lbelow9;//int32
+        long lbelow10;//int32
+        long lbelow11;//int32
+        long lbelow12;//int32
+        long lbelow13;//int32
+        long lbelow14;//int32
+        long lbelow15;//int32
+        long s00;//uint32
+        long s01;//uint32
+        long s02;//uint32
+        long s03;//uint32
+        long s10;//uint32
+        long s11;//uint32
+        long s12;//uint32
+        long s13;//uint32
+        long s20;//uint32
+        long s21;//uint32
+        long s22;//uint32
+        long s23;//uint32
+        long s30;//uint32
+        long s31;//uint32
+        long s32;//uint32
+        long s33;//uint32
+        long bits32;//uint64
+        long f;//uint64
+        long f0;//uint64
+        long f1;//uint64
+        long f2;//uint64
+        long f3;//uint64
+        long f4;//uint64
+        long g;//uint64
+        long g0;//uint64
+        long g1;//uint64
+        long g2;//uint64
+        long g3;//uint64
+        long g4;//uint64
+
+        long p = 0;
+
+        int l = m.length;
+
+        long r00 = 0xFF & r[0];
+        long r01 = 0xFF & r[1];
+        long r02 = 0xFF & r[2];
+        long r0 = 2151;
+
+        long r03 = 0xFF & r[3];
+        r03 &= 15;
+        r0 <<= 51;
+
+        long r10 = 0xFF & r[4];
+        r10 &= 252;
+        r01 <<= 8;
+        r0 += r00;
+
+        long r11 = 0xFF & r[5];
+        r02 <<= 16;
+        r0 += r01;
+
+        long r12 = 0xFF & r[6];
+        r03 <<= 24;
+        r0 += r02;
+
+        long r13 = 0xFF & r[7];
+        r13 &= 15;
+        long r1 = 2215;
+        r0 += r03;
+
+        long d0 = r0;
+        r1 <<= 51;
+        long r2 = 2279;
+
+        long r20 = 0xFF & r[8];
+        r20 &= 252;
+        r11 <<= 8;
+        r1 += r10;
+
+        long r21 = 0xFF & r[9];
+        r12 <<= 16;
+        r1 += r11;
+
+        long r22 = 0xFF & r[10];
+        r13 <<= 24;
+        r1 += r12;
+
+        long r23 = 0xFF & r[11];
+        r23 &= 15;
+        r2 <<= 51;
+        r1 += r13;
+
+        long d1 = r1;
+        r21 <<= 8;
+        r2 += r20;
+
+        long r30 = 0xFF & r[12];
+        r30 &= 252;
+        r22 <<= 16;
+        r2 += r21;
+
+        long r31 = 0xFF & r[13];
+        r23 <<= 24;
+        r2 += r22;
+
+        long r32 = 0xFF & r[14];
+        r2 += r23;
+        long r3 = 2343;
+
+        long d2 = r2;
+        r3 <<= 51;
+
+        long r33 = 0xFF & r[15];
+        r33 &= 15;
+        r31 <<= 8;
+        r3 += r30;
+
+        r32 <<= 16;
+        r3 += r31;
+
+        r33 <<= 24;
+        r3 += r32;
+
+        r3 += r33;
+        double h0 = alpha32 - alpha32;
+
+        long d3 = r3;
+        double h1 = alpha32 - alpha32;
+
+        double h2 = alpha32 - alpha32;
+
+        double h3 = alpha32 - alpha32;
+
+        double h4 = alpha32 - alpha32;
+
+        double r0low = Double.longBitsToDouble(d0);
+        double h5 = alpha32 - alpha32;
+
+        double r1low = longBitsToDouble(d1);
+        double h6 = alpha32 - alpha32;
+
+        double r2low = Double.longBitsToDouble(d2);
+        double h7 = alpha32 - alpha32;
+
+        r0low -= alpha0;
+
+        r1low -= alpha32;
+
+        r2low -= alpha64;
+
+        double r0high = r0low + alpha18;
+
+        double r3low = Double.longBitsToDouble(d3);
+
+        double r1high = r1low + alpha50;
+        double sr1low = scale * r1low;
+
+        double r2high = r2low + alpha82;
+        double sr2low = scale * r2low;
+
+        r0high -= alpha18;
+        double r0high_stack = r0high;
+
+        r3low -= alpha96;
+
+        r1high -= alpha50;
+        double r1high_stack = r1high;
+
+        double sr1high = sr1low + alpham80;
+
+        r0low -= r0high;
+
+        r2high -= alpha82;
+        sr3low = scale * r3low;
+
+        double sr2high = sr2low + alpham48;
+
+        r1low -= r1high;
+        double r1low_stack = r1low;
+
+        sr1high -= alpham80;
+        double sr1high_stack = sr1high;
+
+        r2low -= r2high;
+        double r2low_stack = r2low;
+
+        sr2high -= alpham48;
+        double sr2high_stack = sr2high;
+
+        double r3high = r3low + alpha112;
+        double r0low_stack = r0low;
+
+        sr1low -= sr1high;
+        double sr1low_stack = sr1low;
+
+        double sr3high = sr3low + alpham16;
+        double r2high_stack = r2high;
+
+        sr2low -= sr2high;
+        double sr2low_stack = sr2low;
+
+        r3high -= alpha112;
+        double r3high_stack = r3high;
+
+        sr3high -= alpham16;
+        double sr3high_stack = sr3high;
+
+        r3low -= r3high;
+        double r3low_stack = r3low;
+
+        sr3low -= sr3high;
+        double sr3low_stack = sr3low;
 
+
+        if (!(l < 16)) {
+            m00 = 0xFF & m[(int) p];
+            m0 = 2151;
 
+            m0 <<= 51;
+            m1 = 2215;
+            m01 = 0xFF & m[(int) p + 1];
 
-		if (!(l < 16)) {
-			m00 = 0xFF & m[(int)p];
-			m0 = 2151;
+            m1 <<= 51;
+            m2 = 2279;
+            m02 = 0xFF & m[(int) p + 2];
 
-			m0 <<= 51;
-			m1 = 2215;
-			m01 = 0xFF & m[(int)p+1];
+            m2 <<= 51;
+            m3 = 2343;
+            m03 = 0xFF & (m[(int) p + 3]);
 
-			m1 <<= 51;
-			m2 = 2279;
-			m02 = 0xFF & m[(int)p+2];
+            m10 = 0xFF & (m[(int) p + 4]);
+            m01 <<= 8;
+            m0 += int64(m00);
 
-			m2 <<= 51;
-			m3 = 2343;
-			m03 = 0xFF & (m[(int)p+3]);
+            m11 = 0xFF & (m[(int) p + 5]);
+            m02 <<= 16;
+            m0 += int64(m01);
 
-			m10 = 0xFF & (m[(int)p+4]);
-			m01 <<= 8;
-			m0 += int64(m00);
+            m12 = 0xFF & (m[(int) p + 6]);
+            m03 <<= 24;
+            m0 += int64(m02);
 
-			m11 = 0xFF & (m[(int)p+5]);
-			m02 <<= 16;
-			m0 += int64(m01);
+            m13 = 0xFF & (m[(int) p + 7]);
+            m3 <<= 51;
+            m0 += int64(m03);
 
-			m12 = 0xFF & (m[(int)p+6]);
-			m03 <<= 24;
-			m0 += int64(m02);
+            m20 = 0xFF & (m[(int) p + 8]);
+            m11 <<= 8;
+            m1 += int64(m10);
 
-			m13 = 0xFF & (m[(int)p+7]);
-			m3 <<= 51;
-			m0 += int64(m03);
+            m21 = 0xFF & (m[(int) p + 9]);
+            m12 <<= 16;
+            m1 += int64(m11);
 
-			m20 = 0xFF & (m[(int)p+8]);
-			m11 <<= 8;
-			m1 += int64(m10);
+            m22 = 0xFF & (m[(int) p + 10]);
+            m13 <<= 24;
+            m1 += int64(m12);
 
-			m21 = 0xFF & (m[(int)p+9]);
-			m12 <<= 16;
-			m1 += int64(m11);
+            m23 = 0xFF & (m[(int) p + 11]);
+            m1 += int64(m13);
 
-			m22 = 0xFF & (m[(int)p+10]);
-			m13 <<= 24;
-			m1 += int64(m12);
+            m30 = 0xFF & (m[(int) p + 12]);
+            m21 <<= 8;
+            m2 += int64(m20);
 
-			m23 = 0xFF & (m[(int)p+11]);
-			m1 += int64(m13);
+            m31 = 0xFF & (m[(int) p + 13]);
+            m22 <<= 16;
+            m2 += int64(m21);
 
-			m30 = 0xFF & (m[(int)p+12]);
-			m21 <<= 8;
-			m2 += int64(m20);
+            m32 = 0xFF & (m[(int) p + 14]);
+            m23 <<= 24;
+            m2 += int64(m22);
 
-			m31 = 0xFF & (m[(int)p+13]);
-			m22 <<= 16;
-			m2 += int64(m21);
+            m33 = 0xFF & (m[(int) p + 15]);
+            m2 += int64(m23);
 
-			m32 = 0xFF & (m[(int)p+14]);
-			m23 <<= 24;
-			m2 += int64(m22);
+            d0 = m0;
+            m31 <<= 8;
+            m3 += int64(m30);
+
+            d1 = m1;
+            m32 <<= 16;
+            m3 += int64(m31);
+
+            d2 = m2;
+            m33 += 256;
+
+            m33 <<= 24;
+            m3 += int64(m32);
+
+            m3 += int64(m33);
+            d3 = m3;
+
+            p += 16;
+            l -= 16;
+
+            z0 = Double.longBitsToDouble(uint64(d0));
+
+            z1 = Double.longBitsToDouble(uint64(d1));
+
+            z2 = Double.longBitsToDouble(uint64(d2));
+
+            z3 = Double.longBitsToDouble(uint64(d3));
+
+            z0 -= alpha0;
+
+            z1 -= alpha32;
+
+            z2 -= alpha64;
+
+            z3 -= alpha96;
+
+            h0 += z0;
+
+            h1 += z1;
+
+            h3 += z2;
+
+            h5 += z3;
+
+            while (l >= 16) {
+                //multiplyaddatleast16bytes:
+
+                m2 = 2279;
+                m20 = 0xFF & (m[(int) p + 8]);
+                y7 = h7 + alpha130;
+
+                m2 <<= 51;
+                m3 = 2343;
+                m21 = 0xFF & (m[(int) p + 9]);
+                y6 = h6 + alpha130;
+
+                m3 <<= 51;
+                m0 = 2151;
+                m22 = 0xFF & (m[(int) p + 10]);
+                y1 = h1 + alpha32;
 
-			m33 = 0xFF & (m[(int)p+15]);
-			m2 += int64(m23);
+                m0 <<= 51;
+                m1 = 2215;
+                m23 = 0xFF & (m[(int) p + 11]);
+                y0 = h0 + alpha32;
+
+                m1 <<= 51;
+                m30 = 0xFF & (m[(int) p + 12]);
+                y7 -= alpha130;
+
+                m21 <<= 8;
+                m2 += int64(m20);
+                m31 = 0xFF & (m[(int) p + 13]);
+                y6 -= alpha130;
+
+                m22 <<= 16;
+                m2 += int64(m21);
+                m32 = 0xFF & (m[(int) p + 14]);
+                y1 -= alpha32;
+
+                m23 <<= 24;
+                m2 += int64(m22);
+                m33 = 0xFF & (m[(int) p + 15]);
+                y0 -= alpha32;
 
-			d0 = m0;
-			m31 <<= 8;
-			m3 += int64(m30);
+                m2 += int64(m23);
+                m00 = 0xFF & (m[(int) p + 0]);
+                y5 = h5 + alpha96;
 
-			d1 = m1;
-			m32 <<= 16;
-			m3 += int64(m31);
+                m31 <<= 8;
+                m3 += int64(m30);
+                m01 = 0xFF & (m[(int) p + 1]);
+                y4 = h4 + alpha96;
+
+                m32 <<= 16;
+                m02 = 0xFF & (m[(int) p + 2]);
+                x7 = h7 - y7;
+                y7 *= scale;
+
+                m33 += 256;
+                m03 = 0xFF & (m[(int) p + 3]);
+                x6 = h6 - y6;
+                y6 *= scale;
+
+                m33 <<= 24;
+                m3 += int64(m31);
+                m10 = 0xFF & (m[(int) p + 4]);
+                x1 = h1 - y1;
 
-			d2 = m2;
-			m33 += 256;
+                m01 <<= 8;
+                m3 += int64(m32);
+                m11 = 0xFF & (m[(int) p + 5]);
+                x0 = h0 - y0;
+
+                m3 += int64(m33);
+                m0 += int64(m00);
+                m12 = 0xFF & (m[(int) p + 6]);
+                y5 -= alpha96;
+
+                m02 <<= 16;
+                m0 += int64(m01);
+                m13 = 0xFF & (m[(int) p + 7]);
+                y4 -= alpha96;
 
-			m33 <<= 24;
-			m3 += int64(m32);
-
-			m3 += int64(m33);
-			d3 = m3;
-
-			p += 16;
-			l -= 16;
+                m03 <<= 24;
+                m0 += int64(m02);
+                d2 = m2;
+                x1 += y7;
 
-			z0 = Double.longBitsToDouble(uint64(d0));
-
-			z1 = Double.longBitsToDouble(uint64(d1));
-
-			z2 = Double.longBitsToDouble(uint64(d2));
-
-			z3 = Double.longBitsToDouble(uint64(d3));
-
-			z0 -= alpha0;
-
-			z1 -= alpha32;
-
-			z2 -= alpha64;
-
-			z3 -= alpha96;
-
-			h0 += z0;
-
-			h1 += z1;
-
-			h3 += z2;
-
-			h5 += z3;
-
-			while (l >= 16) {
-				//multiplyaddatleast16bytes:
-
-				m2 = 2279;
-				m20 = 0xFF & (m[(int)p+8]);
-				y7 = h7 + alpha130;
-
-				m2 <<= 51;
-				m3 = 2343;
-				m21 = 0xFF & (m[(int)p+9]);
-				y6 = h6 + alpha130;
+                m0 += int64(m03);
+                d3 = m3;
+                x0 += y6;
 
-				m3 <<= 51;
-				m0 = 2151;
-				m22 = 0xFF & (m[(int)p+10]);
-				y1 = h1 + alpha32;
+                m11 <<= 8;
+                m1 += int64(m10);
+                d0 = m0;
+                x7 += y5;
 
-				m0 <<= 51;
-				m1 = 2215;
-				m23 = 0xFF & (m[(int)p+11]);
-				y0 = h0 + alpha32;
+                m12 <<= 16;
+                m1 += int64(m11);
+                x6 += y4;
 
-				m1 <<= 51;
-				m30 = 0xFF & (m[(int)p+12]);
-				y7 -= alpha130;
+                m13 <<= 24;
+                m1 += int64(m12);
+                y3 = h3 + alpha64;
 
-				m21 <<= 8;
-				m2 += int64(m20);
-				m31 = 0xFF & (m[(int)p+13]);
-				y6 -= alpha130;
+                m1 += int64(m13);
+                d1 = m1;
+                y2 = h2 + alpha64;
 
-				m22 <<= 16;
-				m2 += int64(m21);
-				m32 = 0xFF & (m[(int)p+14]);
-				y1 -= alpha32;
+                x0 += x1;
 
-				m23 <<= 24;
-				m2 += int64(m22);
-				m33 = 0xFF & (m[(int)p+15]);
-				y0 -= alpha32;
+                x6 += x7;
 
-				m2 += int64(m23);
-				m00 = 0xFF & (m[(int)p+0]);
-				y5 = h5 + alpha96;
+                y3 -= alpha64;
+                r3low = r3low_stack;
 
-				m31 <<= 8;
-				m3 += int64(m30);
-				m01 = 0xFF & (m[(int)p+1]);
-				y4 = h4 + alpha96;
+                y2 -= alpha64;
+                r0low = r0low_stack;
 
-				m32 <<= 16;
-				m02 = 0xFF & (m[(int)p+2]);
-				x7 = h7 - y7;
-				y7 *= scale;
+                x5 = h5 - y5;
+                r3lowx0 = r3low * x0;
+                r3high = r3high_stack;
 
-				m33 += 256;
-				m03 = 0xFF & (m[(int)p+3]);
-				x6 = h6 - y6;
-				y6 *= scale;
+                x4 = h4 - y4;
+                r0lowx6 = r0low * x6;
+                r0high = r0high_stack;
 
-				m33 <<= 24;
-				m3 += int64(m31);
-				m10 = 0xFF & (m[(int)p+4]);
-				x1 = h1 - y1;
+                x3 = h3 - y3;
+                r3highx0 = r3high * x0;
+                sr1low = sr1low_stack;
 
-				m01 <<= 8;
-				m3 += int64(m32);
-				m11 = 0xFF & (m[(int)p+5]);
-				x0 = h0 - y0;
+                x2 = h2 - y2;
+                r0highx6 = r0high * x6;
+                sr1high = sr1high_stack;
 
-				m3 += int64(m33);
-				m0 += int64(m00);
-				m12 = 0xFF & (m[(int)p+6]);
-				y5 -= alpha96;
+                x5 += y3;
+                r0lowx0 = r0low * x0;
+                r1low = r1low_stack;
 
-				m02 <<= 16;
-				m0 += int64(m01);
-				m13 = 0xFF & (m[(int)p+7]);
-				y4 -= alpha96;
+                h6 = r3lowx0 + r0lowx6;
+                sr1lowx6 = sr1low * x6;
+                r1high = r1high_stack;
 
-				m03 <<= 24;
-				m0 += int64(m02);
-				d2 = m2;
-				x1 += y7;
+                x4 += y2;
+                r0highx0 = r0high * x0;
+                sr2low = sr2low_stack;
 
-				m0 += int64(m03);
-				d3 = m3;
-				x0 += y6;
+                h7 = r3highx0 + r0highx6;
+                sr1highx6 = sr1high * x6;
+                sr2high = sr2high_stack;
 
-				m11 <<= 8;
-				m1 += int64(m10);
-				d0 = m0;
-				x7 += y5;
+                x3 += y1;
+                r1lowx0 = r1low * x0;
+                r2low = r2low_stack;
 
-				m12 <<= 16;
-				m1 += int64(m11);
-				x6 += y4;
+                h0 = r0lowx0 + sr1lowx6;
+                sr2lowx6 = sr2low * x6;
+                r2high = r2high_stack;
 
-				m13 <<= 24;
-				m1 += int64(m12);
-				y3 = h3 + alpha64;
+                x2 += y0;
+                r1highx0 = r1high * x0;
+                sr3low = sr3low_stack;
 
-				m1 += int64(m13);
-				d1 = m1;
-				y2 = h2 + alpha64;
+                h1 = r0highx0 + sr1highx6;
+                sr2highx6 = sr2high * x6;
+                sr3high = sr3high_stack;
 
-				x0 += x1;
+                x4 += x5;
+                r2lowx0 = r2low * x0;
+                z2 = Double.longBitsToDouble(uint64(d2));
 
-				x6 += x7;
+                h2 = r1lowx0 + sr2lowx6;
+                sr3lowx6 = sr3low * x6;
 
-				y3 -= alpha64;
-				r3low = r3low_stack;
+                x2 += x3;
+                r2highx0 = r2high * x0;
+                z3 = Double.longBitsToDouble(uint64(d3));
 
-				y2 -= alpha64;
-				r0low = r0low_stack;
+                h3 = r1highx0 + sr2highx6;
+                sr3highx6 = sr3high * x6;
 
-				x5 = h5 - y5;
-				r3lowx0 = r3low * x0;
-				r3high = r3high_stack;
+                r1highx4 = r1high * x4;
+                z2 -= alpha64;
 
-				x4 = h4 - y4;
-				r0lowx6 = r0low * x6;
-				r0high = r0high_stack;
+                h4 = r2lowx0 + sr3lowx6;
+                r1lowx4 = r1low * x4;
 
-				x3 = h3 - y3;
-				r3highx0 = r3high * x0;
-				sr1low = sr1low_stack;
+                r0highx4 = r0high * x4;
+                z3 -= alpha96;
 
-				x2 = h2 - y2;
-				r0highx6 = r0high * x6;
-				sr1high = sr1high_stack;
+                h5 = r2highx0 + sr3highx6;
+                r0lowx4 = r0low * x4;
 
-				x5 += y3;
-				r0lowx0 = r0low * x0;
-				r1low = r1low_stack;
+                h7 += r1highx4;
+                sr3highx4 = sr3high * x4;
 
-				h6 = r3lowx0 + r0lowx6;
-				sr1lowx6 = sr1low * x6;
-				r1high = r1high_stack;
+                h6 += r1lowx4;
+                sr3lowx4 = sr3low * x4;
 
-				x4 += y2;
-				r0highx0 = r0high * x0;
-				sr2low = sr2low_stack;
+                h5 += r0highx4;
+                sr2highx4 = sr2high * x4;
 
-				h7 = r3highx0 + r0highx6;
-				sr1highx6 = sr1high * x6;
-				sr2high = sr2high_stack;
+                h4 += r0lowx4;
+                sr2lowx4 = sr2low * x4;
 
-				x3 += y1;
-				r1lowx0 = r1low * x0;
-				r2low = r2low_stack;
+                h3 += sr3highx4;
+                r0lowx2 = r0low * x2;
 
-				h0 = r0lowx0 + sr1lowx6;
-				sr2lowx6 = sr2low * x6;
-				r2high = r2high_stack;
+                h2 += sr3lowx4;
+                r0highx2 = r0high * x2;
 
-				x2 += y0;
-				r1highx0 = r1high * x0;
-				sr3low = sr3low_stack;
+                h1 += sr2highx4;
+                r1lowx2 = r1low * x2;
 
-				h1 = r0highx0 + sr1highx6;
-				sr2highx6 = sr2high * x6;
-				sr3high = sr3high_stack;
+                h0 += sr2lowx4;
+                r1highx2 = r1high * x2;
 
-				x4 += x5;
-				r2lowx0 = r2low * x0;
-				z2 = Double.longBitsToDouble(uint64(d2));
+                h2 += r0lowx2;
+                r2lowx2 = r2low * x2;
 
-				h2 = r1lowx0 + sr2lowx6;
-				sr3lowx6 = sr3low * x6;
+                h3 += r0highx2;
+                r2highx2 = r2high * x2;
 
-				x2 += x3;
-				r2highx0 = r2high * x0;
-				z3 = Double.longBitsToDouble(uint64(d3));
+                h4 += r1lowx2;
+                sr3lowx2 = sr3low * x2;
 
-				h3 = r1highx0 + sr2highx6;
-				sr3highx6 = sr3high * x6;
+                h5 += r1highx2;
+                sr3highx2 = sr3high * x2;
 
-				r1highx4 = r1high * x4;
-				z2 -= alpha64;
+                p += 16;
+                l -= 16;
+                h6 += r2lowx2;
 
-				h4 = r2lowx0 + sr3lowx6;
-				r1lowx4 = r1low * x4;
+                h7 += r2highx2;
 
-				r0highx4 = r0high * x4;
-				z3 -= alpha96;
+                z1 = Double.longBitsToDouble(uint64(d1));
+                h0 += sr3lowx2;
 
-				h5 = r2highx0 + sr3highx6;
-				r0lowx4 = r0low * x4;
+                z0 = Double.longBitsToDouble(uint64(d0));
+                h1 += sr3highx2;
 
-				h7 += r1highx4;
-				sr3highx4 = sr3high * x4;
+                z1 -= alpha32;
 
-				h6 += r1lowx4;
-				sr3lowx4 = sr3low * x4;
+                z0 -= alpha0;
 
-				h5 += r0highx4;
-				sr2highx4 = sr2high * x4;
+                h5 += z3;
 
-				h4 += r0lowx4;
-				sr2lowx4 = sr2low * x4;
+                h3 += z2;
 
-				h3 += sr3highx4;
-				r0lowx2 = r0low * x2;
+                h1 += z1;
 
-				h2 += sr3lowx4;
-				r0highx2 = r0high * x2;
+                h0 += z0;
 
-				h1 += sr2highx4;
-				r1lowx2 = r1low * x2;
+            }
 
-				h0 += sr2lowx4;
-				r1highx2 = r1high * x2;
+            // multiplyaddatmost15bytes:
+            y7 = h7 + alpha130;
 
-				h2 += r0lowx2;
-				r2lowx2 = r2low * x2;
+            y6 = h6 + alpha130;
 
-				h3 += r0highx2;
-				r2highx2 = r2high * x2;
+            y1 = h1 + alpha32;
 
-				h4 += r1lowx2;
-				sr3lowx2 = sr3low * x2;
+            y0 = h0 + alpha32;
 
-				h5 += r1highx2;
-				sr3highx2 = sr3high * x2;
+            y7 -= alpha130;
 
-				p += 16;
-				l -= 16;
-				h6 += r2lowx2;
+            y6 -= alpha130;
 
-				h7 += r2highx2;
+            y1 -= alpha32;
 
-				z1 = Double.longBitsToDouble(uint64(d1));
-				h0 += sr3lowx2;
+            y0 -= alpha32;
 
-				z0 = Double.longBitsToDouble(uint64(d0));
-				h1 += sr3highx2;
+            y5 = h5 + alpha96;
 
-				z1 -= alpha32;
+            y4 = h4 + alpha96;
 
-				z0 -= alpha0;
+            x7 = h7 - y7;
+            y7 *= scale;
 
-				h5 += z3;
+            x6 = h6 - y6;
+            y6 *= scale;
 
-				h3 += z2;
+            x1 = h1 - y1;
 
-				h1 += z1;
+            x0 = h0 - y0;
 
-				h0 += z0;
+            y5 -= alpha96;
 
-			}
+            y4 -= alpha96;
 
-			// multiplyaddatmost15bytes:
-			y7 = h7 + alpha130;
+            x1 += y7;
 
-			y6 = h6 + alpha130;
+            x0 += y6;
 
-			y1 = h1 + alpha32;
+            x7 += y5;
 
-			y0 = h0 + alpha32;
+            x6 += y4;
 
-			y7 -= alpha130;
+            y3 = h3 + alpha64;
 
-			y6 -= alpha130;
+            y2 = h2 + alpha64;
 
-			y1 -= alpha32;
+            x0 += x1;
 
-			y0 -= alpha32;
+            x6 += x7;
 
-			y5 = h5 + alpha96;
+            y3 -= alpha64;
+            r3low = r3low_stack;
 
-			y4 = h4 + alpha96;
+            y2 -= alpha64;
+            r0low = r0low_stack;
 
-			x7 = h7 - y7;
-			y7 *= scale;
+            x5 = h5 - y5;
+            r3lowx0 = r3low * x0;
+            r3high = r3high_stack;
 
-			x6 = h6 - y6;
-			y6 *= scale;
+            x4 = h4 - y4;
+            r0lowx6 = r0low * x6;
+            r0high = r0high_stack;
 
-			x1 = h1 - y1;
+            x3 = h3 - y3;
+            r3highx0 = r3high * x0;
+            sr1low = sr1low_stack;
 
-			x0 = h0 - y0;
+            x2 = h2 - y2;
+            r0highx6 = r0high * x6;
+            sr1high = sr1high_stack;
 
-			y5 -= alpha96;
+            x5 += y3;
+            r0lowx0 = r0low * x0;
+            r1low = r1low_stack;
 
-			y4 -= alpha96;
+            h6 = r3lowx0 + r0lowx6;
+            sr1lowx6 = sr1low * x6;
+            r1high = r1high_stack;
 
-			x1 += y7;
+            x4 += y2;
+            r0highx0 = r0high * x0;
+            sr2low = sr2low_stack;
 
-			x0 += y6;
+            h7 = r3highx0 + r0highx6;
+            sr1highx6 = sr1high * x6;
+            sr2high = sr2high_stack;
 
-			x7 += y5;
+            x3 += y1;
+            r1lowx0 = r1low * x0;
+            r2low = r2low_stack;
 
-			x6 += y4;
+            h0 = r0lowx0 + sr1lowx6;
+            sr2lowx6 = sr2low * x6;
+            r2high = r2high_stack;
 
-			y3 = h3 + alpha64;
+            x2 += y0;
+            r1highx0 = r1high * x0;
+            sr3low = sr3low_stack;
 
-			y2 = h2 + alpha64;
+            h1 = r0highx0 + sr1highx6;
+            sr2highx6 = sr2high * x6;
+            sr3high = sr3high_stack;
 
-			x0 += x1;
+            x4 += x5;
+            r2lowx0 = r2low * x0;
 
-			x6 += x7;
+            h2 = r1lowx0 + sr2lowx6;
+            sr3lowx6 = sr3low * x6;
 
-			y3 -= alpha64;
-			r3low = r3low_stack;
+            x2 += x3;
+            r2highx0 = r2high * x0;
 
-			y2 -= alpha64;
-			r0low = r0low_stack;
+            h3 = r1highx0 + sr2highx6;
+            sr3highx6 = sr3high * x6;
 
-			x5 = h5 - y5;
-			r3lowx0 = r3low * x0;
-			r3high = r3high_stack;
+            r1highx4 = r1high * x4;
 
-			x4 = h4 - y4;
-			r0lowx6 = r0low * x6;
-			r0high = r0high_stack;
+            h4 = r2lowx0 + sr3lowx6;
+            r1lowx4 = r1low * x4;
 
-			x3 = h3 - y3;
-			r3highx0 = r3high * x0;
-			sr1low = sr1low_stack;
+            r0highx4 = r0high * x4;
 
-			x2 = h2 - y2;
-			r0highx6 = r0high * x6;
-			sr1high = sr1high_stack;
+            h5 = r2highx0 + sr3highx6;
+            r0lowx4 = r0low * x4;
 
-			x5 += y3;
-			r0lowx0 = r0low * x0;
-			r1low = r1low_stack;
+            h7 += r1highx4;
+            sr3highx4 = sr3high * x4;
 
-			h6 = r3lowx0 + r0lowx6;
-			sr1lowx6 = sr1low * x6;
-			r1high = r1high_stack;
+            h6 += r1lowx4;
+            sr3lowx4 = sr3low * x4;
 
-			x4 += y2;
-			r0highx0 = r0high * x0;
-			sr2low = sr2low_stack;
+            h5 += r0highx4;
+            sr2highx4 = sr2high * x4;
 
-			h7 = r3highx0 + r0highx6;
-			sr1highx6 = sr1high * x6;
-			sr2high = sr2high_stack;
+            h4 += r0lowx4;
+            sr2lowx4 = sr2low * x4;
 
-			x3 += y1;
-			r1lowx0 = r1low * x0;
-			r2low = r2low_stack;
+            h3 += sr3highx4;
+            r0lowx2 = r0low * x2;
 
-			h0 = r0lowx0 + sr1lowx6;
-			sr2lowx6 = sr2low * x6;
-			r2high = r2high_stack;
+            h2 += sr3lowx4;
+            r0highx2 = r0high * x2;
 
-			x2 += y0;
-			r1highx0 = r1high * x0;
-			sr3low = sr3low_stack;
+            h1 += sr2highx4;
+            r1lowx2 = r1low * x2;
 
-			h1 = r0highx0 + sr1highx6;
-			sr2highx6 = sr2high * x6;
-			sr3high = sr3high_stack;
+            h0 += sr2lowx4;
+            r1highx2 = r1high * x2;
 
-			x4 += x5;
-			r2lowx0 = r2low * x0;
+            h2 += r0lowx2;
+            r2lowx2 = r2low * x2;
 
-			h2 = r1lowx0 + sr2lowx6;
-			sr3lowx6 = sr3low * x6;
+            h3 += r0highx2;
+            r2highx2 = r2high * x2;
 
-			x2 += x3;
-			r2highx0 = r2high * x0;
+            h4 += r1lowx2;
+            sr3lowx2 = sr3low * x2;
 
-			h3 = r1highx0 + sr2highx6;
-			sr3highx6 = sr3high * x6;
+            h5 += r1highx2;
+            sr3highx2 = sr3high * x2;
 
-			r1highx4 = r1high * x4;
+            h6 += r2lowx2;
 
-			h4 = r2lowx0 + sr3lowx6;
-			r1lowx4 = r1low * x4;
+            h7 += r2highx2;
 
-			r0highx4 = r0high * x4;
+            h0 += sr3lowx2;
 
-			h5 = r2highx0 + sr3highx6;
-			r0lowx4 = r0low * x4;
+            h1 += sr3highx2;
+        }
 
-			h7 += r1highx4;
-			sr3highx4 = sr3high * x4;
+        // addatmost15bytes:
 
-			h6 += r1lowx4;
-			sr3lowx4 = sr3low * x4;
+        if (l > 0) {
+            lbelow2 = l - 2;
 
-			h5 += r0highx4;
-			sr2highx4 = sr2high * x4;
+            lbelow3 = l - 3;
 
-			h4 += r0lowx4;
-			sr2lowx4 = sr2low * x4;
+            lbelow2 >>= 31;
+            lbelow4 = l - 4;
 
-			h3 += sr3highx4;
-			r0lowx2 = r0low * x2;
+            m00 = 0xFF & (m[(int) p + 0]);
+            lbelow3 >>= 31;
+            p += lbelow2;
 
-			h2 += sr3lowx4;
-			r0highx2 = r0high * x2;
+            m01 = 0xFF & (m[(int) p + 1]);
+            lbelow4 >>= 31;
+            p += lbelow3;
 
-			h1 += sr2highx4;
-			r1lowx2 = r1low * x2;
+            m02 = 0xFF & (m[(int) p + 2]);
+            p += lbelow4;
+            m0 = 2151;
 
-			h0 += sr2lowx4;
-			r1highx2 = r1high * x2;
+            m03 = 0xFF & (m[(int) p + 3]);
+            m0 <<= 51;
+            m1 = 2215;
 
-			h2 += r0lowx2;
-			r2lowx2 = r2low * x2;
+            m0 += int64(m00);
+            m01 &= ~uint32(lbelow2);
 
-			h3 += r0highx2;
-			r2highx2 = r2high * x2;
+            m02 &= ~uint32(lbelow3);
+            m01 -= uint32(lbelow2);
 
-			h4 += r1lowx2;
-			sr3lowx2 = sr3low * x2;
+            m01 <<= 8;
+            m03 &= ~uint32(lbelow4);
 
-			h5 += r1highx2;
-			sr3highx2 = sr3high * x2;
+            m0 += int64(m01);
+            lbelow2 -= lbelow3;
 
-			h6 += r2lowx2;
+            m02 += uint32(lbelow2);
+            lbelow3 -= lbelow4;
 
-			h7 += r2highx2;
+            m02 <<= 16;
+            m03 += uint32(lbelow3);
 
-			h0 += sr3lowx2;
+            m03 <<= 24;
+            m0 += int64(m02);
 
-			h1 += sr3highx2;
-		}
+            m0 += int64(m03);
+            lbelow5 = l - 5;
 
-		// addatmost15bytes:
+            lbelow6 = l - 6;
+            lbelow7 = l - 7;
 
-		if (l > 0) {
-			lbelow2 = l - 2;
+            lbelow5 >>= 31;
+            lbelow8 = l - 8;
 
-			lbelow3 = l - 3;
+            lbelow6 >>= 31;
+            p += lbelow5;
 
-			lbelow2 >>= 31;
-			lbelow4 = l - 4;
+            m10 = 0xFF & (m[(int) p + 4]);
+            lbelow7 >>= 31;
+            p += lbelow6;
 
-			m00 = 0xFF & (m[(int)p+0]);
-			lbelow3 >>= 31;
-			p += lbelow2;
+            m11 = 0xFF & (m[(int) p + 5]);
+            lbelow8 >>= 31;
+            p += lbelow7;
 
-			m01 = 0xFF & (m[(int)p+1]);
-			lbelow4 >>= 31;
-			p += lbelow3;
+            m12 = 0xFF & (m[(int) p + 6]);
+            m1 <<= 51;
+            p += lbelow8;
 
-			m02 = 0xFF & (m[(int)p+2]);
-			p += lbelow4;
-			m0 = 2151;
+            m13 = 0xFF & (m[(int) p + 7]);
+            m10 &= ~uint32(lbelow5);
+            lbelow4 -= lbelow5;
 
-			m03 = 0xFF & (m[(int)p+3]);
-			m0 <<= 51;
-			m1 = 2215;
+            m10 += uint32(lbelow4);
+            lbelow5 -= lbelow6;
 
-			m0 += int64(m00);
-			m01 &= ~uint32(lbelow2);
+            m11 &= ~uint32(lbelow6);
+            m11 += uint32(lbelow5);
 
-			m02 &= ~uint32(lbelow3);
-			m01 -= uint32(lbelow2);
+            m11 <<= 8;
+            m1 += int64(m10);
 
-			m01 <<= 8;
-			m03 &= ~uint32(lbelow4);
+            m1 += int64(m11);
+            m12 &= ~uint32(lbelow7);
 
-			m0 += int64(m01);
-			lbelow2 -= lbelow3;
+            lbelow6 -= lbelow7;
+            m13 &= ~uint32(lbelow8);
 
-			m02 += uint32(lbelow2);
-			lbelow3 -= lbelow4;
+            m12 += uint32(lbelow6);
+            lbelow7 -= lbelow8;
 
-			m02 <<= 16;
-			m03 += uint32(lbelow3);
+            m12 <<= 16;
+            m13 += uint32(lbelow7);
 
-			m03 <<= 24;
-			m0 += int64(m02);
+            m13 <<= 24;
+            m1 += int64(m12);
 
-			m0 += int64(m03);
-			lbelow5 = l - 5;
+            m1 += int64(m13);
+            m2 = 2279;
 
-			lbelow6 = l - 6;
-			lbelow7 = l - 7;
+            lbelow9 = l - 9;
+            m3 = 2343;
 
-			lbelow5 >>= 31;
-			lbelow8 = l - 8;
+            lbelow10 = l - 10;
+            lbelow11 = l - 11;
 
-			lbelow6 >>= 31;
-			p += lbelow5;
+            lbelow9 >>= 31;
+            lbelow12 = l - 12;
 
-			m10 = 0xFF & (m[(int)p+4]);
-			lbelow7 >>= 31;
-			p += lbelow6;
+            lbelow10 >>= 31;
+            p += lbelow9;
 
-			m11 = 0xFF & (m[(int)p+5]);
-			lbelow8 >>= 31;
-			p += lbelow7;
+            m20 = 0xFF & (m[(int) p + 8]);
+            lbelow11 >>= 31;
+            p += lbelow10;
 
-			m12 = 0xFF & (m[(int)p+6]);
-			m1 <<= 51;
-			p += lbelow8;
+            m21 = 0xFF & (m[(int) p + 9]);
+            lbelow12 >>= 31;
+            p += lbelow11;
 
-			m13 = 0xFF & (m[(int)p+7]);
-			m10 &= ~uint32(lbelow5);
-			lbelow4 -= lbelow5;
+            m22 = 0xFF & (m[(int) p + 10]);
+            m2 <<= 51;
+            p += lbelow12;
 
-			m10 += uint32(lbelow4);
-			lbelow5 -= lbelow6;
+            m23 = 0xFF & (m[(int) p + 11]);
+            m20 &= ~uint32(lbelow9);
+            lbelow8 -= lbelow9;
 
-			m11 &= ~uint32(lbelow6);
-			m11 += uint32(lbelow5);
+            m20 += uint32(lbelow8);
+            lbelow9 -= lbelow10;
 
-			m11 <<= 8;
-			m1 += int64(m10);
+            m21 &= ~uint32(lbelow10);
+            m21 += uint32(lbelow9);
 
-			m1 += int64(m11);
-			m12 &= ~uint32(lbelow7);
+            m21 <<= 8;
+            m2 += int64(m20);
 
-			lbelow6 -= lbelow7;
-			m13 &= ~uint32(lbelow8);
+            m2 += int64(m21);
+            m22 &= ~uint32(lbelow11);
 
-			m12 += uint32(lbelow6);
-			lbelow7 -= lbelow8;
+            lbelow10 -= lbelow11;
+            m23 &= ~uint32(lbelow12);
 
-			m12 <<= 16;
-			m13 += uint32(lbelow7);
+            m22 += uint32(lbelow10);
+            lbelow11 -= lbelow12;
 
-			m13 <<= 24;
-			m1 += int64(m12);
+            m22 <<= 16;
+            m23 += uint32(lbelow11);
 
-			m1 += int64(m13);
-			m2 = 2279;
+            m23 <<= 24;
+            m2 += int64(m22);
 
-			lbelow9 = l - 9;
-			m3 = 2343;
+            m3 <<= 51;
+            lbelow13 = l - 13;
 
-			lbelow10 = l - 10;
-			lbelow11 = l - 11;
+            lbelow13 >>= 31;
+            lbelow14 = l - 14;
 
-			lbelow9 >>= 31;
-			lbelow12 = l - 12;
+            lbelow14 >>= 31;
+            p += lbelow13;
+            lbelow15 = l - 15;
 
-			lbelow10 >>= 31;
-			p += lbelow9;
+            m30 = uint32(m[(int) p + 12]);
+            lbelow15 >>= 31;
+            p += lbelow14;
 
-			m20 = 0xFF & (m[(int)p+8]);
-			lbelow11 >>= 31;
-			p += lbelow10;
+            m31 = 0xFF & (m[(int) p + 13]);
+            p += lbelow15;
+            m2 += int64(m23);
 
-			m21 = 0xFF & (m[(int)p+9]);
-			lbelow12 >>= 31;
-			p += lbelow11;
+            m32 = 0xFF & (m[(int) p + 14]);
+            m30 &= ~uint32(lbelow13);
+            lbelow12 -= lbelow13;
 
-			m22 = 0xFF & (m[(int)p+10]);
-			m2 <<= 51;
-			p += lbelow12;
+            m30 += uint32(lbelow12);
+            lbelow13 -= lbelow14;
 
-			m23 = 0xFF & (m[(int)p+11]);
-			m20 &= ~uint32(lbelow9);
-			lbelow8 -= lbelow9;
+            m3 += int64(m30);
+            m31 &= ~uint32(lbelow14);
 
-			m20 += uint32(lbelow8);
-			lbelow9 -= lbelow10;
+            m31 += uint32(lbelow13);
+            m32 &= ~uint32(lbelow15);
 
-			m21 &= ~uint32(lbelow10);
-			m21 += uint32(lbelow9);
+            m31 <<= 8;
+            lbelow14 -= lbelow15;
 
-			m21 <<= 8;
-			m2 += int64(m20);
+            m3 += int64(m31);
+            m32 += uint32(lbelow14);
+            d0 = m0;
 
-			m2 += int64(m21);
-			m22 &= ~uint32(lbelow11);
+            m32 <<= 16;
+            m33 = uint64(lbelow15 + 1);
+            d1 = m1;
 
-			lbelow10 -= lbelow11;
-			m23 &= ~uint32(lbelow12);
+            m33 <<= 24;
+            m3 += int64(m32);
+            d2 = m2;
 
-			m22 += uint32(lbelow10);
-			lbelow11 -= lbelow12;
+            m3 += int64(m33);
+            d3 = m3;
 
-			m22 <<= 16;
-			m23 += uint32(lbelow11);
+            z3 = Double.longBitsToDouble(uint64(d3));
+            ;
 
-			m23 <<= 24;
-			m2 += int64(m22);
+            z2 = Double.longBitsToDouble(uint64(d2));
 
-			m3 <<= 51;
-			lbelow13 = l - 13;
+            z1 = Double.longBitsToDouble(uint64(d1));
 
-			lbelow13 >>= 31;
-			lbelow14 = l - 14;
+            z0 = Double.longBitsToDouble(uint64(d0));
 
-			lbelow14 >>= 31;
-			p += lbelow13;
-			lbelow15 = l - 15;
+            z3 -= alpha96;
 
-			m30 = uint32(m[(int)p+12]);
-			lbelow15 >>= 31;
-			p += lbelow14;
+            z2 -= alpha64;
 
-			m31 = 0xFF & (m[(int)p+13]);
-			p += lbelow15;
-			m2 += int64(m23);
+            z1 -= alpha32;
 
-			m32 = 0xFF & (m[(int)p+14]);
-			m30 &= ~uint32(lbelow13);
-			lbelow12 -= lbelow13;
+            z0 -= alpha0;
 
-			m30 += uint32(lbelow12);
-			lbelow13 -= lbelow14;
+            h5 += z3;
 
-			m3 += int64(m30);
-			m31 &= ~uint32(lbelow14);
+            h3 += z2;
 
-			m31 += uint32(lbelow13);
-			m32 &= ~uint32(lbelow15);
+            h1 += z1;
 
-			m31 <<= 8;
-			lbelow14 -= lbelow15;
+            h0 += z0;
 
-			m3 += int64(m31);
-			m32 += uint32(lbelow14);
-			d0 = m0;
+            y7 = h7 + alpha130;
 
-			m32 <<= 16;
-			m33 = uint64(lbelow15 + 1);
-			d1 = m1;
+            y6 = h6 + alpha130;
 
-			m33 <<= 24;
-			m3 += int64(m32);
-			d2 = m2;
+            y1 = h1 + alpha32;
 
-			m3 += int64(m33);
-			d3 = m3;
+            y0 = h0 + alpha32;
 
-			z3 = Double.longBitsToDouble(uint64(d3));;
+            y7 -= alpha130;
 
-			z2 = Double.longBitsToDouble(uint64(d2));
+            y6 -= alpha130;
 
-			z1 = Double.longBitsToDouble(uint64(d1));
+            y1 -= alpha32;
 
-			z0 = Double.longBitsToDouble(uint64(d0));
+            y0 -= alpha32;
 
-			z3 -= alpha96;
+            y5 = h5 + alpha96;
 
-			z2 -= alpha64;
+            y4 = h4 + alpha96;
 
-			z1 -= alpha32;
+            x7 = h7 - y7;
+            y7 *= scale;
 
-			z0 -= alpha0;
+            x6 = h6 - y6;
+            y6 *= scale;
 
-			h5 += z3;
+            x1 = h1 - y1;
 
-			h3 += z2;
+            x0 = h0 - y0;
 
-			h1 += z1;
+            y5 -= alpha96;
 
-			h0 += z0;
+            y4 -= alpha96;
 
-			y7 = h7 + alpha130;
+            x1 += y7;
 
-			y6 = h6 + alpha130;
+            x0 += y6;
 
-			y1 = h1 + alpha32;
+            x7 += y5;
 
-			y0 = h0 + alpha32;
+            x6 += y4;
 
-			y7 -= alpha130;
+            y3 = h3 + alpha64;
 
-			y6 -= alpha130;
+            y2 = h2 + alpha64;
 
-			y1 -= alpha32;
+            x0 += x1;
 
-			y0 -= alpha32;
+            x6 += x7;
 
-			y5 = h5 + alpha96;
+            y3 -= alpha64;
+            r3low = r3low_stack;
 
-			y4 = h4 + alpha96;
+            y2 -= alpha64;
+            r0low = r0low_stack;
 
-			x7 = h7 - y7;
-			y7 *= scale;
+            x5 = h5 - y5;
+            r3lowx0 = r3low * x0;
+            r3high = r3high_stack;
 
-			x6 = h6 - y6;
-			y6 *= scale;
+            x4 = h4 - y4;
+            r0lowx6 = r0low * x6;
+            r0high = r0high_stack;
 
-			x1 = h1 - y1;
+            x3 = h3 - y3;
+            r3highx0 = r3high * x0;
+            sr1low = sr1low_stack;
 
-			x0 = h0 - y0;
+            x2 = h2 - y2;
+            r0highx6 = r0high * x6;
+            sr1high = sr1high_stack;
 
-			y5 -= alpha96;
+            x5 += y3;
+            r0lowx0 = r0low * x0;
+            r1low = r1low_stack;
 
-			y4 -= alpha96;
+            h6 = r3lowx0 + r0lowx6;
+            sr1lowx6 = sr1low * x6;
+            r1high = r1high_stack;
 
-			x1 += y7;
+            x4 += y2;
+            r0highx0 = r0high * x0;
+            sr2low = sr2low_stack;
 
-			x0 += y6;
+            h7 = r3highx0 + r0highx6;
+            sr1highx6 = sr1high * x6;
+            sr2high = sr2high_stack;
 
-			x7 += y5;
+            x3 += y1;
+            r1lowx0 = r1low * x0;
+            r2low = r2low_stack;
 
-			x6 += y4;
+            h0 = r0lowx0 + sr1lowx6;
+            sr2lowx6 = sr2low * x6;
+            r2high = r2high_stack;
 
-			y3 = h3 + alpha64;
+            x2 += y0;
+            r1highx0 = r1high * x0;
+            sr3low = sr3low_stack;
 
-			y2 = h2 + alpha64;
+            h1 = r0highx0 + sr1highx6;
+            sr2highx6 = sr2high * x6;
+            sr3high = sr3high_stack;
 
-			x0 += x1;
+            x4 += x5;
+            r2lowx0 = r2low * x0;
 
-			x6 += x7;
+            h2 = r1lowx0 + sr2lowx6;
+            sr3lowx6 = sr3low * x6;
 
-			y3 -= alpha64;
-			r3low = r3low_stack;
+            x2 += x3;
+            r2highx0 = r2high * x0;
 
-			y2 -= alpha64;
-			r0low = r0low_stack;
+            h3 = r1highx0 + sr2highx6;
+            sr3highx6 = sr3high * x6;
 
-			x5 = h5 - y5;
-			r3lowx0 = r3low * x0;
-			r3high = r3high_stack;
+            r1highx4 = r1high * x4;
 
-			x4 = h4 - y4;
-			r0lowx6 = r0low * x6;
-			r0high = r0high_stack;
+            h4 = r2lowx0 + sr3lowx6;
+            r1lowx4 = r1low * x4;
 
-			x3 = h3 - y3;
-			r3highx0 = r3high * x0;
-			sr1low = sr1low_stack;
+            r0highx4 = r0high * x4;
 
-			x2 = h2 - y2;
-			r0highx6 = r0high * x6;
-			sr1high = sr1high_stack;
+            h5 = r2highx0 + sr3highx6;
+            r0lowx4 = r0low * x4;
 
-			x5 += y3;
-			r0lowx0 = r0low * x0;
-			r1low = r1low_stack;
+            h7 += r1highx4;
+            sr3highx4 = sr3high * x4;
 
-			h6 = r3lowx0 + r0lowx6;
-			sr1lowx6 = sr1low * x6;
-			r1high = r1high_stack;
+            h6 += r1lowx4;
+            sr3lowx4 = sr3low * x4;
 
-			x4 += y2;
-			r0highx0 = r0high * x0;
-			sr2low = sr2low_stack;
+            h5 += r0highx4;
+            sr2highx4 = sr2high * x4;
 
-			h7 = r3highx0 + r0highx6;
-			sr1highx6 = sr1high * x6;
-			sr2high = sr2high_stack;
+            h4 += r0lowx4;
+            sr2lowx4 = sr2low * x4;
 
-			x3 += y1;
-			r1lowx0 = r1low * x0;
-			r2low = r2low_stack;
+            h3 += sr3highx4;
+            r0lowx2 = r0low * x2;
 
-			h0 = r0lowx0 + sr1lowx6;
-			sr2lowx6 = sr2low * x6;
-			r2high = r2high_stack;
+            h2 += sr3lowx4;
+            r0highx2 = r0high * x2;
 
-			x2 += y0;
-			r1highx0 = r1high * x0;
-			sr3low = sr3low_stack;
+            h1 += sr2highx4;
+            r1lowx2 = r1low * x2;
 
-			h1 = r0highx0 + sr1highx6;
-			sr2highx6 = sr2high * x6;
-			sr3high = sr3high_stack;
+            h0 += sr2lowx4;
+            r1highx2 = r1high * x2;
 
-			x4 += x5;
-			r2lowx0 = r2low * x0;
+            h2 += r0lowx2;
+            r2lowx2 = r2low * x2;
 
-			h2 = r1lowx0 + sr2lowx6;
-			sr3lowx6 = sr3low * x6;
+            h3 += r0highx2;
+            r2highx2 = r2high * x2;
 
-			x2 += x3;
-			r2highx0 = r2high * x0;
+            h4 += r1lowx2;
+            sr3lowx2 = sr3low * x2;
 
-			h3 = r1highx0 + sr2highx6;
-			sr3highx6 = sr3high * x6;
+            h5 += r1highx2;
+            sr3highx2 = sr3high * x2;
 
-			r1highx4 = r1high * x4;
+            h6 += r2lowx2;
 
-			h4 = r2lowx0 + sr3lowx6;
-			r1lowx4 = r1low * x4;
+            h7 += r2highx2;
 
-			r0highx4 = r0high * x4;
+            h0 += sr3lowx2;
 
-			h5 = r2highx0 + sr3highx6;
-			r0lowx4 = r0low * x4;
+            h1 += sr3highx2;
+        }
 
-			h7 += r1highx4;
-			sr3highx4 = sr3high * x4;
+        //nomorebytes:
 
-			h6 += r1lowx4;
-			sr3lowx4 = sr3low * x4;
+        y7 = h7 + alpha130;
 
-			h5 += r0highx4;
-			sr2highx4 = sr2high * x4;
+        y0 = h0 + alpha32;
 
-			h4 += r0lowx4;
-			sr2lowx4 = sr2low * x4;
+        y1 = h1 + alpha32;
 
-			h3 += sr3highx4;
-			r0lowx2 = r0low * x2;
+        y2 = h2 + alpha64;
 
-			h2 += sr3lowx4;
-			r0highx2 = r0high * x2;
+        y7 -= alpha130;
 
-			h1 += sr2highx4;
-			r1lowx2 = r1low * x2;
+        y3 = h3 + alpha64;
 
-			h0 += sr2lowx4;
-			r1highx2 = r1high * x2;
+        y4 = h4 + alpha96;
 
-			h2 += r0lowx2;
-			r2lowx2 = r2low * x2;
+        y5 = h5 + alpha96;
 
-			h3 += r0highx2;
-			r2highx2 = r2high * x2;
+        x7 = h7 - y7;
+        y7 *= scale;
 
-			h4 += r1lowx2;
-			sr3lowx2 = sr3low * x2;
+        y0 -= alpha32;
 
-			h5 += r1highx2;
-			sr3highx2 = sr3high * x2;
+        y1 -= alpha32;
 
-			h6 += r2lowx2;
+        y2 -= alpha64;
 
-			h7 += r2highx2;
+        h6 += x7;
 
-			h0 += sr3lowx2;
+        y3 -= alpha64;
 
-			h1 += sr3highx2;
-		}
+        y4 -= alpha96;
 
-		//nomorebytes:
+        y5 -= alpha96;
 
-		y7 = h7 + alpha130;
+        y6 = h6 + alpha130;
 
-		y0 = h0 + alpha32;
+        x0 = h0 - y0;
 
-		y1 = h1 + alpha32;
+        x1 = h1 - y1;
 
-		y2 = h2 + alpha64;
+        x2 = h2 - y2;
 
-		y7 -= alpha130;
+        y6 -= alpha130;
 
-		y3 = h3 + alpha64;
+        x0 += y7;
 
-		y4 = h4 + alpha96;
+        x3 = h3 - y3;
 
-		y5 = h5 + alpha96;
+        x4 = h4 - y4;
 
-		x7 = h7 - y7;
-		y7 *= scale;
+        x5 = h5 - y5;
 
-		y0 -= alpha32;
+        x6 = h6 - y6;
 
-		y1 -= alpha32;
+        y6 *= scale;
 
-		y2 -= alpha64;
+        x2 += y0;
 
-		h6 += x7;
+        x3 += y1;
 
-		y3 -= alpha64;
+        x4 += y2;
 
-		y4 -= alpha96;
+        x0 += y6;
 
-		y5 -= alpha96;
+        x5 += y3;
 
-		y6 = h6 + alpha130;
+        x6 += y4;
 
-		x0 = h0 - y0;
+        x2 += x3;
 
-		x1 = h1 - y1;
+        x0 += x1;
 
-		x2 = h2 - y2;
+        x4 += x5;
 
-		y6 -= alpha130;
+        x6 += y5;
 
-		x0 += y7;
+        x2 += offset1;
+        d1 = int64(Double.doubleToLongBits(x2));
 
-		x3 = h3 - y3;
+        x0 += offset0;
+        d0 = int64(Double.doubleToLongBits(x0));
 
-		x4 = h4 - y4;
+        x4 += offset2;
+        d2 = int64(Double.doubleToLongBits(x4));
 
-		x5 = h5 - y5;
+        x6 += offset3;
+        d3 = int64(Double.doubleToLongBits(x6));
 
-		x6 = h6 - y6;
+        f0 = uint64(d0);
 
-		y6 *= scale;
+        f1 = uint64(d1);
+        bits32 = 0xFFFFFFFFFFFFFFFFl;
 
-		x2 += y0;
+        f2 = uint64(d2);
+        bits32 >>>= 32;
 
-		x3 += y1;
+        f3 = uint64(d3);
+        f = f0 >> 32;
 
-		x4 += y2;
+        f0 &= bits32;
+        f &= 255;
 
-		x0 += y6;
+        f1 += f;
+        g0 = f0 + 5;
 
-		x5 += y3;
+        g = g0 >> 32;
+        g0 &= bits32;
 
-		x6 += y4;
+        f = f1 >> 32;
+        f1 &= bits32;
 
-		x2 += x3;
+        f &= 255;
+        g1 = f1 + g;
 
-		x0 += x1;
+        g = g1 >> 32;
+        f2 += f;
 
-		x4 += x5;
+        f = f2 >> 32;
+        g1 &= bits32;
 
-		x6 += y5;
+        f2 &= bits32;
+        f &= 255;
 
-		x2 += offset1;
-		d1 = int64(Double.doubleToLongBits(x2));
+        f3 += f;
+        g2 = f2 + g;
 
-		x0 += offset0;
-		d0 = int64(Double.doubleToLongBits(x0));
+        g = g2 >> 32;
+        g2 &= bits32;
 
-		x4 += offset2;
-		d2 = int64(Double.doubleToLongBits(x4));
+        f4 = f3 >> 32;
+        f3 &= bits32;
 
-		x6 += offset3;
-		d3 = int64(Double.doubleToLongBits(x6));
+        f4 &= 255;
+        g3 = f3 + g;
 
-		f0 = uint64(d0);
+        g = g3 >> 32;
+        g3 &= bits32;
 
-		f1 = uint64(d1);
-		bits32 = 0xFFFFFFFFFFFFFFFFl;
+        g4 = f4 + g;
 
-		f2 = uint64(d2);
-		bits32 >>>= 32;
+        g4 = g4 - 4;
+        s00 = 0xFF & (s[0]);
 
-		f3 = uint64(d3);
-		f = f0 >> 32;
+        f = uint64(int64(g4) >> 63);
+        s01 = 0xFF & (s[1]);
 
-		f0 &= bits32;
-		f &= 255;
+        f0 &= f;
+        g0 &= ~f;
+        s02 = 0xFF & (s[2]);
 
-		f1 += f;
-		g0 = f0 + 5;
+        f1 &= f;
+        f0 |= g0;
+        s03 = 0xFF & (s[3]);
 
-		g = g0 >> 32;
-		g0 &= bits32;
+        g1 &= ~f;
+        f2 &= f;
+        s10 = 0xFF & (s[4]);
 
-		f = f1 >> 32;
-		f1 &= bits32;
+        f3 &= f;
+        g2 &= ~f;
+        s11 = 0xFF & (s[5]);
 
-		f &= 255;
-		g1 = f1 + g;
+        g3 &= ~f;
+        f1 |= g1;
+        s12 = 0xFF & (s[6]);
 
-		g = g1 >> 32;
-		f2 += f;
+        f2 |= g2;
+        f3 |= g3;
+        s13 = 0xFF & (s[7]);
 
-		f = f2 >> 32;
-		g1 &= bits32;
+        s01 <<= 8;
+        f0 += uint64(s00);
+        s20 = 0xFF & (s[8]);
 
-		f2 &= bits32;
-		f &= 255;
+        s02 <<= 16;
+        f0 += uint64(s01);
+        s21 = 0xFF & (s[9]);
 
-		f3 += f;
-		g2 = f2 + g;
+        s03 <<= 24;
+        f0 += uint64(s02);
+        s22 = 0xFF & (s[10]);
 
-		g = g2 >> 32;
-		g2 &= bits32;
+        s11 <<= 8;
+        f1 += uint64(s10);
+        s23 = 0xFF & (s[11]);
 
-		f4 = f3 >> 32;
-		f3 &= bits32;
+        s12 <<= 16;
+        f1 += uint64(s11);
+        s30 = 0xFF & (s[12]);
 
-		f4 &= 255;
-		g3 = f3 + g;
+        s13 <<= 24;
+        f1 += (s12);
+        s31 = 0xFF & s[13];
 
-		g = g3 >> 32;
-		g3 &= bits32;
+        f0 += (s03);
+        f1 += (s13);
+        s32 = 0xFF & (s[14]);
 
-		g4 = f4 + g;
+        s21 <<= 8;
+        f2 += (s20);
+        s33 = 0xFF & (s[15]);
 
-		g4 = g4 - 4;
-		s00 = 0xFF & (s[0]);
+        s22 <<= 16;
+        f2 += (s21);
 
-		f = uint64(int64(g4) >> 63);
-		s01 = 0xFF & (s[1]);
+        s23 <<= 24;
+        f2 += (s22);
 
-		f0 &= f;
-		g0  &= ~f;
-		s02 = 0xFF & (s[2]);
+        s31 <<= 8;
+        f3 += (s30);
 
-		f1 &= f;
-		f0 |= g0;
-		s03 = 0xFF & (s[3]);
+        s32 <<= 16;
+        f3 += (s31);
 
-		g1 &= ~f;
-		f2 &= f;
-		s10 = 0xFF & (s[4]);
+        s33 <<= 24;
+        f3 += (s32);
 
-		f3 &= f;
-		g2 &= ~f;
-		s11 = 0xFF & (s[5]);
+        f2 += (s23);
+        f3 += s33;
 
-		g3 &= ~f;
-		f1 |= g1;
-		s12 = 0xFF & (s[6]);
+        byte out[] = new byte[16];
+        out[0] = (byte) (f0);
+        f0 >>= 8;
+        out[1] = (byte) (f0);
+        f0 >>= 8;
+        out[2] = (byte) (f0);
+        f0 >>= 8;
+        out[3] = (byte) (f0);
+        f0 >>= 8;
+        f1 += f0;
 
-		f2 |= g2;
-		f3 |= g3;
-		s13 = 0xFF & (s[7]);
+        out[4] = (byte) (f1);
+        f1 >>= 8;
+        out[5] = (byte) (f1);
+        f1 >>= 8;
+        out[6] = (byte) (f1);
+        f1 >>= 8;
+        out[7] = (byte) (f1);
+        f1 >>= 8;
+        f2 += f1;
 
-		s01 <<= 8;
-		f0 += uint64(s00);
-		s20 = 0xFF & (s[8]);
+        out[8] = (byte) (f2);
+        f2 >>= 8;
+        out[9] = (byte) (f2);
+        f2 >>= 8;
+        out[10] = (byte) (f2);
+        f2 >>= 8;
+        out[11] = (byte) (f2);
+        f2 >>= 8;
+        f3 += f2;
 
-		s02 <<= 16;
-		f0 += uint64(s01);
-		s21 = 0xFF & (s[9]);
-
-		s03 <<= 24;
-		f0 += uint64(s02);
-		s22 = 0xFF & (s[10]);
-
-		s11 <<= 8;
-		f1 += uint64(s10);
-		s23 = 0xFF & (s[11]);
-
-		s12 <<= 16;
-		f1 += uint64(s11);
-		s30 = 0xFF & (s[12]);
-
-		s13 <<= 24;
-		f1 += (s12);
-		s31 = 0xFF & s[13];
-
-		f0 += (s03);
-		f1 += (s13);
-		s32 = 0xFF & (s[14]);
-
-		s21 <<= 8;
-		f2 += (s20);
-		s33 = 0xFF & (s[15]);
-
-		s22 <<= 16;
-		f2 += (s21);
-
-		s23 <<= 24;
-		f2 += (s22);
-
-		s31 <<= 8;
-		f3 += (s30);
-
-		s32 <<= 16;
-		f3 += (s31);
-
-		s33 <<= 24;
-		f3 += (s32);
-
-		f2 += (s23);
-		f3 += s33;
-
-		byte out[] = new byte[16];
-		out[0] = (byte)(f0);
-		f0 >>= 8;
-		out[1] = (byte)(f0);
-		f0 >>= 8;
-		out[2] = (byte)(f0);
-		f0 >>= 8;
-		out[3] = (byte)(f0);
-		f0 >>= 8;
-		f1 += f0;
-
-		out[4] = (byte)(f1);
-		f1 >>= 8;
-		out[5] = (byte)(f1);
-		f1 >>= 8;
-		out[6] = (byte)(f1);
-		f1 >>= 8;
-		out[7] = (byte)(f1);
-		f1 >>= 8;
-		f2 += f1;
-
-		out[8] = (byte)(f2);
-		f2 >>= 8;
-		out[9] = (byte)(f2);
-		f2 >>= 8;
-		out[10] = (byte)(f2);
-		f2 >>= 8;
-		out[11] = (byte)(f2);
-		f2 >>= 8;
-		f3 += f2;
-
-		out[12] = (byte)f3;
-		f3 >>= 8;
-		out[13] = (byte)f3;
-		f3 >>= 8;
-		out[14] = (byte)f3;
-		f3 >>= 8;
-		out[15] = (byte)f3;
-		return out;
-	}
+        out[12] = (byte) f3;
+        f3 >>= 8;
+        out[13] = (byte) f3;
+        f3 >>= 8;
+        out[14] = (byte) f3;
+        f3 >>= 8;
+        out[15] = (byte) f3;
+        return out;
+    }
 }
