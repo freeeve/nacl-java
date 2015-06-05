@@ -7,6 +7,7 @@ A port of [NaCl](http://nacl.cr.yp.to/) to Java. I had too much trouble getting 
 ## TODO
 
 * remove java 7 stdlib use
+* improve readme
 * improve javadocs
 * maven repo?
 * clean up unnecessary byte array allocations (partly done)
