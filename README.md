@@ -8,7 +8,7 @@ A port of [NaCl](http://nacl.cr.yp.to/) to Java. I had too much trouble getting 
 Also available as an [example unit test](https://github.com/wfreeman/nacl-java/blob/master/src/test/java/com/caligochat/nacl/ExampleTest.java).
 ```Java
 // string to encrypt
-String helloBob = "Hello, Bob";
+String helloBob = "Hello, Bob!";
 // we need it in bytes
 byte[] helloBobBytes = helloBob.getBytes("UTF-8");
 
@@ -21,18 +21,23 @@ r.nextBytes(nonce);
 Box.KeyPair alice = Box.generate();
 Box.KeyPair bob = Box.generate();
 
-// make some boxes with the keypairs 
+// make some boxes with the keypairs
 Box aliceToBob = new Box(bob.pubKey, alice.privKey);
 Box bobFromAlice = new Box(alice.pubKey, bob.privKey);
 
 // seal the box (encrypt)
 byte box[] = aliceToBob.seal(helloBobBytes, nonce);
 
-// open the box (decrypt)
-byte plainBytes[] = bobFromAlice.open(box, nonce);
-
 // voila!
-String msg = new String(plainBytes, "UTF-8");
+try {
+  // open the box (decrypt)
+  byte decryptedBytes[] = bobFromAlice.open(box, nonce);
+
+  String decryptedString = new String(decryptedBytes, "UTF-8");
+  assertEquals(helloBob, decryptedString);
+} catch(NaclException e) {
+  fail("failed to decrypt");
+}
 ```
 
 ## TODO
