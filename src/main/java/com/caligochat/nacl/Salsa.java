@@ -1,4 +1,4 @@
-package com.caligollc.nacl;
+package com.caligochat.nacl;
 
 /**
  */
@@ -7,10 +7,6 @@ public class Salsa {
 
 	private static int rounds = 20;
 
-	private static long mask(long x) {
-		return 0xFFFFFFFFl & x;
-	}
-
 	private static long mask(byte x) {
 		return 0xFFl & x;
 	}
@@ -18,9 +14,6 @@ public class Salsa {
 	// core applies the Salsa20 core function to 16-byte input in, 32-byte key k,
 	// and 16-byte constant c, and puts the result into 64-byte array out.
 	public static byte[] core(byte in[], byte k[], byte c[]) {
-		//Util.printHex("in", in);
-		//Util.printHex("k core 14", k);
-		//Util.printHex("c core 15", c);
 		byte out[] = new byte[64];
 		long mask = 0xFFFFFFFFl;
 
@@ -46,127 +39,77 @@ public class Salsa {
 		long x9 = j9, x10 = j10, x11 = j11, x12 = j12;
 		long x13 = j13, x14 = j14, x15 = j15;
 
-		debug("x0", x0);
-		debug("x1", x1);
-		debug("x2", x2);
-		debug("x3", x3);
-		debug("x4", x4);
-		debug("x5", x5);
-		debug("x6", x6);
-		debug("x7", x7);
-		debug("x8", x8);
-		debug("x9", x9);
-		debug("x10", x10);
-		debug("x11", x11);
-		debug("x12", x12);
-		debug("x13", x13);
-		debug("x14", x14);
-		debug("x15", x15);
-
 		for(int i = 0; i < rounds; i += 2) {
-			debug("round", i);
 			long u = mask & (x0 + x12);
-			debug("u", u);
 			x4 ^= mask & (u<<7 | u>>>(32-7));
 			u = mask & (x4 + x0);
-			debug("u", u);
 			x8 ^= mask & (u<<9 | u>>>(32-9));
 			u = mask & (x8 + x4);
-			debug("u", u);
 			x12 ^= mask & (u<<13 | u>>>(32-13));
 			u = mask & (x12 + x8);
-			debug("u", u);
 			x0 ^= mask & (u<<18 | u>>>(32-18));
 
 			u = mask & (x5 + x1);
-			debug("u", u);
 			x9 ^= mask & (u<<7 | u>>>(32-7));
 			u = mask & (x9 + x5);
-			debug("u", u);
 			x13 ^= mask & (u<<9 | u>>>(32-9));
 			u = mask & (x13 + x9);
-			debug("u", u);
 			x1 ^= mask & (u<<13 | u>>>(32-13));
 			u = mask & (x1 + x13);
-			debug("u", u);
 			x5 ^= mask & (u<<18 | u>>>(32-18));
 
 			u = mask & (x10 + x6);
-			debug("u", u);
 			x14 ^= mask & (u<<7 | u>>>(32-7));
 			u = mask & (x14 + x10);
-			debug("u", u);
 			x2 ^= mask & (u<<9 | u>>>(32-9));
 			u = mask & (x2 + x14);
-			debug("u", u);
 			x6 ^= mask & (u<<13 | u>>>(32-13));
 			u = mask & (x6 + x2);
-			debug("u", u);
 			x10 ^= mask & (u<<18 | u>>>(32-18));
 
 			u = mask & (x15 + x11);
-			debug("u", u);
 			x3 ^= mask & (u<<7 | u>>>(32-7));
 			u = mask & (x3 + x15);
-			debug("u", u);
 			x7 ^= mask & (u<<9 | u>>>(32-9));
 			u = mask & (x7 + x3);
-			debug("u", u);
 			x11 ^= mask & (u<<13 | u>>>(32-13));
 			u = mask & (x11 + x7);
-			debug("u", u);
 			x15 ^= mask & (u<<18 | u>>>(32-18));
 
 			u = mask & (x0 + x3);
-			debug("u", u);
 			x1 ^= mask & (u<<7 | u>>>(32-7));
 			u = mask & (x1 + x0);
-			debug("u", u);
 			x2 ^= mask & (u<<9 | u>>>(32-9));
 			u = mask & (x2 + x1);
-			debug("u", u);
 			x3 ^= mask & (u<<13 | u>>>(32-13));
 			u = mask & (x3 + x2);
-			debug("u", u);
 			x0 ^= mask & (u<<18 | u>>>(32-18));
 
 			u = mask & (x5 + x4);
-			debug("u", u);
 			x6 ^= mask & (u<<7 | u>>>(32-7));
 			u = mask & (x6 + x5);
-			debug("u", u);
 			x7 ^= mask & (u<<9 | u>>>(32-9));
 			u = mask & (x7 + x6);
-			debug("u", u);
 			x4 ^= mask & (u<<13 | u>>>(32-13));
 			u = mask & (x4 + x7);
-			debug("u", u);
 			x5 ^= mask & (u<<18 | u>>>(32-18));
 
 			u = mask & (x10 + x9);
-			debug("u", u);
 			x11 ^= mask & (u<<7 | u>>>(32-7));
 			u = mask & (x11 + x10);
-			debug("u", u);
 			x8 ^= mask & (u<<9 | u>>>(32-9));
 			u = mask & (x8 + x11);
-			debug("u", u);
 			x9 ^= mask & (u<<13 | u>>>(32-13));
 			u = mask & (x9 + x8);
-			debug("u", u);
 			x10 ^= mask & (u<<18 | u>>>(32-18));
 
 			u = mask & (x15 + x14);
-			debug("u", u);
 			x12 ^= mask & (u<<7 | u>>>(32-7));
 			u = mask & (x12 + x15);
-			debug("u", u);
 			x13 ^= mask & (u<<9 | u>>>(32-9));
 			u = mask & (x13 + x12);
-			debug("u", u);
 			x14 ^= mask & (u<<13 | u>>>(32-13));
 			u = mask & (x14 + x13);
-			debug("u", u);
 			x15 ^= mask & (u<<18 | u>>>(32-18));
 		}
 
@@ -203,23 +146,6 @@ public class Salsa {
 		x13 &= mask;
 		x14 &= mask;
 		x15 &= mask;
-
-		debug("x0", x0);
-		debug("x1", x1);
-		debug("x2", x2);
-		debug("x3", x3);
-		debug("x4", x4);
-		debug("x5", x5);
-		debug("x6", x6);
-		debug("x7", x7);
-		debug("x8", x8);
-		debug("x9", x9);
-		debug("x10", x10);
-		debug("x11", x11);
-		debug("x12", x12);
-		debug("x13", x13);
-		debug("x14", x14);
-		debug("x15", x15);
 
 		out[0] = (byte)(x0);
 		out[1] = (byte)(x0 >> 8);
@@ -312,12 +238,8 @@ public class Salsa {
 		byte counterCopy[] =  counter.clone();
 
 		int count = 0;
-		//Util.printHex("key", key);
 		while (in.length >= 64) {
-			//Util.printHex("in", in);
-			//Util.printHex("counterCopy", counterCopy);
 			block = core(counterCopy, key, SIGMA);
-			//Util.printHex("block", block);
 
 			for (int i = 0; i < block.length; i++) {
 				byte x = block[i];
@@ -337,26 +259,16 @@ public class Salsa {
 
 			count++;
 		}
-		//Util.printHex("out", out);
 
 		if (in.length > 0) {
-			//Util.printHex("in", in);
-			//Util.printHex("counterCopy", counterCopy);
 			block = core(counterCopy, key, SIGMA);
-			//Util.printHex("block", block);
 
 			for (int i = 0; i < in.length; i++) {
 				out[i+count*64] = (byte)(in[i] ^ block[i]);
-				//Util.printHex("out", out);
 			}
 		}
-		//Util.printHex("out", out);
 
 		return out;
-	}
-
-	public static void debug(String name, long x) {
-		//System.out.println(name + " " + x);
 	}
 
 	// HSalsa20 applies the HSalsa20 core function to a 16-byte input in, 32-byte
@@ -380,127 +292,78 @@ public class Salsa {
 		long x14 = mask(k[28]) | mask(k[29]) << 8 | mask(k[30]) << 16 | mask(k[31]) << 24;
 		long x15 = mask(c[12]) | mask(c[13]) << 8 | mask(c[14]) << 16 | mask(c[15]) << 24;
 
-		debug("x0", x0);
-		debug("x1", x1);
-		debug("x2", x2);
-		debug("x3", x3);
-		debug("x4", x4);
-		debug("x5", x5);
-		debug("x6", x6);
-		debug("x7", x7);
-		debug("x8", x8);
-		debug("x9", x9);
-		debug("x10", x10);
-		debug("x11", x11);
-		debug("x12", x12);
-		debug("x13", x13);
-		debug("x14", x14);
-		debug("x15", x15);
-
 		long mask = 0xFFFFFFFFl;
 		for (int i = 0; i < 20; i += 2) {
 			long u = mask & (x0 + x12);
-			debug("u", u);
 			x4 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x4 + x0);
-			debug("u", u);
 			x8 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x8 + x4);
-			debug("u", u);
 			x12 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x12 + x8);
-			debug("u", u);
 			x0 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x5 + x1);
-			debug("u", u);
 			x9 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x9 + x5);
-			debug("u", u);
 			x13 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x13 + x9);
-			debug("u", u);
 			x1 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x1 + x13);
-			debug("u", u);
 			x5 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x10 + x6);
-			debug("u", u);
 			x14 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x14 + x10);
-			debug("u", u);
 			x2 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x2 + x14);
-			debug("u", u);
 			x6 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x6 + x2);
-			debug("u", u);
 			x10 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x15 + x11);
-			debug("u", u);
 			x3 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x3 + x15);
-			debug("u", u);
 			x7 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x7 + x3);
-			debug("u", u);
 			x11 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x11 + x7);
-			debug("u", u);
 			x15 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x0 + x3);
-			debug("u", u);
 			x1 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x1 + x0);
-			debug("u", u);
 			x2 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x2 + x1);
-			debug("u", u);
 			x3 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x3 + x2);
-			debug("u", u);
 			x0 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x5 + x4);
-			debug("u", u);
 			x6 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x6 + x5);
-			debug("u", u);
 			x7 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x7 + x6);
-			debug("u", u);
 			x4 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x4 + x7);
-			debug("u", u);
 			x5 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x10 + x9);
-			debug("u", u);
 			x11 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x11 + x10);
-			debug("u", u);
 			x8 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x8 + x11);
-			debug("u", u);
 			x9 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x9 + x8);
-			debug("u", u);
 			x10 ^= mask & (u << 18 | u >>> (32 - 18));
 
 			u = mask & (x15 + x14);
-			debug("u", u);
 			x12 ^= mask & (u << 7 | u >>> (32 - 7));
 			u = mask & (x12 + x15);
-			debug("u", u);
 			x13 ^= mask & (u << 9 | u >>> (32 - 9));
 			u = mask & (x13 + x12);
-			debug("u", u);
 			x14 ^= mask & (u << 13 | u >>> (32 - 13));
 			u = mask & (x14 + x13);
-			debug("u", u);
 			x15 ^= mask & (u << 18 | u >>> (32 - 18));
 		}
 

@@ -1,4 +1,4 @@
-package com.caligollc.nacl;
+package com.caligochat.nacl;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.SecureRandom;
@@ -41,10 +41,7 @@ public class Box {
 
 	private byte[] precompute(byte[] peersPublicKey, byte[] privateKey) {
 		byte sharedKey[];
-		//Util.printHex("peersPublicKey", peersPublicKey);
-		//Util.printHex("privateKey", privateKey);
 		sharedKey = Curve25519.scalarMult(privateKey, peersPublicKey);
-		//Util.printHex("sharedKey", sharedKey);
 		sharedKey = Salsa.HSalsa20(zeros, sharedKey, Salsa.SIGMA);
 		return sharedKey;
 	}

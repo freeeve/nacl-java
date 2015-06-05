@@ -1,4 +1,4 @@
-package com.caligollc.nacl;
+package com.caligochat.nacl;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -61,16 +61,6 @@ public class Curve25519 {
 			long h7 = load3(src, 23) << 5;
 			long h8 = load3(src, 26) << 4;
 			long h9 = load3(src, 29) << 2;
-			debug("h0", h0);
-			debug("h1", h1);
-			debug("h2", h2);
-			debug("h3", h3);
-			debug("h4", h4);
-			debug("h5", h5);
-			debug("h6", h6);
-			debug("h7", h7);
-			debug("h8", h8);
-			debug("h9", h9);
 
 			long carry[] = new long[10];
 			carry[9] = ((h9 + (1<<24)) >> 25);
@@ -161,10 +151,7 @@ public class Curve25519 {
 			q = (arr[8] + q) >> 26;
 			q = (arr[9] + q) >> 25;
 
-			// Goal: Output h-(2^255-19)q, which is between 0 and 2^255-20.
 			arr[0] += 19 * q;
-			// Goal: Output h-2^255 q, which is between 0 and 2^255-20.
-
 			carry[0] = arr[0] >> 26;
 			arr[1] += carry[0];
 			arr[0] -= carry[0] << 26;
@@ -194,12 +181,6 @@ public class Curve25519 {
 			arr[8] -= carry[8] << 26;
 			carry[9] = arr[9] >> 25;
 			arr[9] -= carry[9] << 25;
-			// h10 = carry9
-
-			// Goal: Output arr[0]+...+2^255 h10-2^255 q, which is between 0 and 2^255-20.
-			// Have arr[0]+...+2^230 arr[9] between 0 and 2^255-1;
-			// evidently 2^255 h10-2^255 q = 0.
-			// Goal: Output arr[0]+...+2^230 arr[9].
 
 			retVal[0] = (byte)(arr[0] >> 0);
 			retVal[1] = (byte)(arr[0] >> 8);
@@ -328,65 +309,45 @@ public class Curve25519 {
 			long carry[] = new long[10];
 
 			carry[0] = ((h0 + (1 << 25)) >> 26);
-			//debug("carry[0]", carry[0]);
 			h1 += carry[0];
-			//debug("h1", h1);
 			h0 -= carry[0] << 26;
-			//debug("h0", h0);
 			carry[4] = ((h4 + (1 << 25)) >> 26);
-			//debug("carry[4]", carry[4]);
 			h5 += carry[4];
-			//debug("h5", h5);
 			h4 -= carry[4] << 26;
-			//debug("h4", h4);
 
 			carry[1] = ((h1 + (1 << 24)) >> 25);
-			//debug("carry[1]", carry[1]);
 			h2 += carry[1];
-			//debug("h2", h2);
 			h1 -= carry[1] << 25;
-			//debug("h1", h1);
 			carry[5] = ((h5 + (1 << 24)) >> 25);
-			//debug("carry[5]", carry[5]);
 			h6 += carry[5];
-			//debug("h6", h6);
 			h5 -= carry[5] << 25;
-			//debug("h5", h5);
 
 			carry[2] = ((h2 + (1 << 25)) >> 26);
-			//debug("carry[2]", carry[2]);
 			h3 += carry[2];
 			h2 -= carry[2] << 26;
 			carry[6] = ((h6 + (1 << 25)) >> 26);
-			//debug("carry[6]", carry[6]);
 			h7 += carry[6];
 			h6 -= carry[6] << 26;
 
 			carry[3] = ((h3 + (1 << 24)) >> 25);
-			//debug("carry[3]", carry[3]);
 			h4 += carry[3];
 			h3 -= carry[3] << 25;
 			carry[7] = ((h7 + (1 << 24)) >> 25);
-			//debug("carry[7]", carry[7]);
 			h8 += carry[7];
 			h7 -= carry[7] << 25;
 
 			carry[4] = ((h4 + (1 << 25)) >> 26);
-			//debug("carry[4]", carry[4]);
 			h5 += carry[4];
 			h4 -= carry[4] << 26;
 			carry[8] = ((h8 + (1 << 25)) >> 26);
-			//debug("carry[8]", carry[8]);
 			h9 += carry[8];
 			h8 -= carry[8] << 26;
 
 			carry[9] = ((h9 + (1 << 24)) >> 25);
-			//debug("carry[9]", carry[9]);
 			h0 += carry[9] * 19;
 			h9 -= carry[9] << 25;
 
 			carry[0] = ((h0 + (1 << 25)) >> 26);
-			//debug("carry[0]", carry[0]);
 			h1 += carry[0];
 			h0 -= carry[0] << 26;
 
@@ -439,8 +400,6 @@ public class Curve25519 {
 
 	private static FieldElement feMul(FieldElement f, FieldElement g) {
 		FieldElement retVal = new FieldElement();
-		//debug("f:", f);
-		//debug("g:", g);
 		long f0 = f.arr[0];
 		long f1 = f.arr[1];
 		long f2 = f.arr[2];
@@ -587,37 +546,19 @@ public class Curve25519 {
 		long h9 = f0g9 + f1g8 + f2g7 + f3g6 + f4g5 + f5g4 + f6g3 + f7g2 + f8g1 + f9g0;
 		long carry[] = new long[10];
 
-		// |h0| <= (1.1*1.1*2^52*(1+19+19+19+19)+1.1*1.1*2^50*(38+38+38+38+38))
-		//   i.e. |h0| <= 1.2*2^59; narrower ranges for h2, h4, h6, h8
-		// |h1| <= (1.1*1.1*2^51*(1+1+19+19+19+19+19+19+19+19))
-		//   i.e. |h1| <= 1.5*2^58; narrower ranges for h3, h5, h7, h9
-
 		carry[0] = ((h0 + (1 << 25)) >> 26);
-		//debug("h0:" + h0);
-		//debug("carry0:" + carry[0]);
-		//debug("h1 before carry:" + h1);
 		h1 += carry[0];
 		h0 -= carry[0] << 26;
 		carry[4] = ((h4 + (1 << 25)) >> 26);
 		h5 += carry[4];
 		h4 -= carry[4] << 26;
-		// |h0| <= 2^25
-		// |h4| <= 2^25
-		// |h1| <= 1.51*2^58
-		// |h5| <= 1.51*2^58
 
 		carry[1] = ((h1 + (1 << 24)) >> 25);
-		//debug("h1:" + h1);
-		//debug("carry1:" + carry[1]);
 		h2 += carry[1];
 		h1 -= carry[1] << 25;
 		carry[5] = ((h5 + (1 << 24)) >> 25);
 		h6 += carry[5];
 		h5 -= carry[5] << 25;
-		// |h1| <= 2^24; from now on fits into int32
-		// |h5| <= 2^24; from now on fits into int32
-		// |h2| <= 1.21*2^59
-		// |h6| <= 1.21*2^59
 
 		carry[2] = ((h2 + (1 << 25)) >> 26);
 		h3 += carry[2];
@@ -625,10 +566,6 @@ public class Curve25519 {
 		carry[6] = ((h6 + (1 << 25)) >> 26);
 		h7 += carry[6];
 		h6 -= carry[6] << 26;
-		// |h2| <= 2^25; from now on fits into int32 unchanged
-		// |h6| <= 2^25; from now on fits into int32 unchanged
-		// |h3| <= 1.51*2^58
-		// |h7| <= 1.51*2^58
 
 		carry[3] = ((h3 + (1 << 24)) >> 25);
 		h4 += carry[3];
@@ -636,10 +573,6 @@ public class Curve25519 {
 		carry[7] = ((h7 + (1 << 24)) >> 25);
 		h8 += carry[7];
 		h7 -= carry[7] << 25;
-		// |h3| <= 2^24; from now on fits into int32 unchanged
-		// |h7| <= 2^24; from now on fits into int32 unchanged
-		// |h4| <= 1.52*2^33
-		// |h8| <= 1.52*2^33
 
 		carry[4] = ((h4 + (1 << 25)) >> 26);
 		h5 += carry[4];
@@ -647,22 +580,14 @@ public class Curve25519 {
 		carry[8] = ((h8 + (1 << 25)) >> 26);
 		h9 += carry[8];
 		h8 -= carry[8] << 26;
-		// |h4| <= 2^25; from now on fits into int32 unchanged
-		// |h8| <= 2^25; from now on fits into int32 unchanged
-		// |h5| <= 1.01*2^24
-		// |h9| <= 1.51*2^58
 
 		carry[9] = ((h9 + (1 << 24)) >> 25);
 		h0 += carry[9] * 19;
 		h9 -= carry[9] << 25;
-		// |h9| <= 2^24; from now on fits into int32 unchanged
-		// |h0| <= 1.8*2^37
 
 		carry[0] = ((h0 + (1 << 25)) >> 26);
 		h1 += carry[0];
 		h0 -= carry[0] << 26;
-		// |h0| <= 2^25; from now on fits into int32 unchanged
-		// |h1| <= 1.01*2^24
 
 		retVal.arr[0] = (int)h0;
 		retVal.arr[1] = (int)h1;
@@ -828,13 +753,9 @@ public class Curve25519 {
 		e[31] |= (byte)64;
 
 		FieldElement x1 = new FieldElement(base);
-		debug("x1", x1);
 		FieldElement x2 = FieldElement.ONE();
-		debug("x2", x2);
 		FieldElement x3 = new FieldElement(x1);
-		debug("x3", x3);
 		FieldElement z3 = FieldElement.ONE();
-		debug("z3", z3);
 		FieldElement z2 = FieldElement.ZERO(); // this isn't in the orig code
 
 		long swap = 0;
@@ -843,77 +764,40 @@ public class Curve25519 {
 			long b = e[pos/8] >> (pos&7);
 			b &= 1;
 			swap ^= b;
-			debug("swap", swap);
 			feCSwap(x2, x3, swap);
-			debug("x2", x2);
-			debug("x3", x3);
 			feCSwap(z2, z3, swap);
-			debug("z2", z2);
-			debug("z3", z3);
 			swap = b;
 
 			FieldElement tmp0 = feSub(x3, z3);
-			debug("tmp0", tmp0);
 			FieldElement tmp1 = feSub(x2, z2);
-			debug("tmp1", tmp1);
 			x2 = feAdd(x2, z2);
-			debug("x2", x2);
 			z2 = feAdd(x3, z3);
-			debug("z2", z2);
 			z3 = feMul(tmp0, x2);
-			debug("z3", z3);
 			z2 = feMul(z2, tmp1);
-			debug("z2", z2);
 			tmp0 = feSquare(tmp1);
-			debug("tmp0", tmp0);
 			tmp1 = feSquare(x2);
-			debug("tmp1", tmp1);
 			x3 = feAdd(z3, z2);
-			debug("x3", x3);
 			z2 = feSub(z3, z2);
-			debug("z2", z2);
 			x2 = feMul(tmp1, tmp0);
-			debug("x2", x2);
 			tmp1 = feSub(tmp1, tmp0);
-			debug("tmp1", tmp1);
 			z2 = feSquare(z2);
-			debug("z2", z2);
 			z3 = feMul121666(tmp1);
-			debug("z3", z3);
 			x3 = feSquare(x3);
-			debug("x3", x3);
 			tmp0 = feAdd(tmp0, z3);
-			debug("tmp0", tmp0);
 			z3 = feMul(x1, z2);
-			debug("z3", z3);
 			z2 = feMul(tmp1, tmp0);
-			debug("z2", z2);
-			//if(pos < 200) break;
 		}
 
-		debug("x2", x2);
-		debug("x3", x3);
 		feCSwap(x2, x3, swap);
-		debug("x2", x2);
-		debug("x3", x3);
 		feCSwap(z2, z3, swap);
-		debug("z2", z2);
-		debug("z3", z3);
 
 		z2 = feInvert(z2);
-		debug("z2", z2);
 		x2 = feMul(x2, z2);
-		debug("x2", x2);
 		out = x2.toBytes();
-		debug("out", DatatypeConverter.printHexBinary(out).toLowerCase());
 		return out;
 	}
 
 	public static byte[] scalarBaseMult(byte in[]) {
 		return scalarMult(in, basePoint);
-	}
-
-	private static void debug(String name, Object x){
-		//System.out.println(name + " " + x);
 	}
 }

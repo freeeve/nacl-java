@@ -1,4 +1,4 @@
-package com.caligollc.nacl;
+package com.caligochat.nacl;
 
 import org.junit.Test;
 
@@ -541,7 +541,7 @@ public class BoxTest {
 
 	@Test
 	public void TestLong() {
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < 100; i++) {
 			Box.KeyPair alice = Box.generate();
 			Box.KeyPair bob = Box.generate();
 			Box aliceToBob = new Box(bob.pubKey, alice.privKey);

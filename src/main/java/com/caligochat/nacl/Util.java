@@ -1,4 +1,4 @@
-package com.caligollc.nacl;
+package com.caligochat.nacl;
 
 import javax.xml.bind.DatatypeConverter;
 

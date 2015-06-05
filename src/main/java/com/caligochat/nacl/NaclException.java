@@ -1,4 +1,4 @@
-package com.caligollc.nacl;
+package com.caligochat.nacl;
 
 /**
  * Created by wfreeman on 2/11/15.
