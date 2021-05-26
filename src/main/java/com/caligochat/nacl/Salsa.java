@@ -7,32 +7,28 @@ public class Salsa {
 
     private static int rounds = 20;
 
-    private static long mask(byte x) {
-        return 0xFFl & x;
-    }
-
     // core applies the Salsa20 core function to 16-byte input in, 32-byte key k,
     // and 16-byte constant c, and puts the result into 64-byte array out.
     public static byte[] core(byte in[], byte k[], byte c[]) {
         byte out[] = new byte[64];
         long mask = 0xFFFFFFFFl;
 
-        long j0 = mask & (mask(c[0]) | mask(c[1]) << 8 | mask(c[2]) << 16 | mask(c[3]) << 24);
-        long j1 = mask & (mask(k[0]) | mask(k[1]) << 8 | mask(k[2]) << 16 | mask(k[3]) << 24);
-        long j2 = mask & (mask(k[4]) | mask(k[5]) << 8 | mask(k[6]) << 16 | mask(k[7]) << 24);
-        long j3 = mask & (mask(k[8]) | mask(k[9]) << 8 | mask(k[10]) << 16 | mask(k[11]) << 24);
-        long j4 = mask & (mask(k[12]) | mask(k[13]) << 8 | mask(k[14]) << 16 | mask(k[15]) << 24);
-        long j5 = mask & (mask(c[4]) | mask(c[5]) << 8 | mask(c[6]) << 16 | mask(c[7]) << 24);
-        long j6 = mask & (mask(in[0]) | mask(in[1]) << 8 | mask(in[2]) << 16 | mask(in[3]) << 24);
-        long j7 = mask & (mask(in[4]) | mask(in[5]) << 8 | mask(in[6]) << 16 | mask(in[7]) << 24);
-        long j8 = mask & (mask(in[8]) | mask(in[9]) << 8 | mask(in[10]) << 16 | mask(in[11]) << 24);
-        long j9 = mask & (mask(in[12]) | mask(in[13]) << 8 | mask(in[14]) << 16 | mask(in[15]) << 24);
-        long j10 = mask & (mask(c[8]) | mask(c[9]) << 8 | mask(c[10]) << 16 | mask(c[11]) << 24);
-        long j11 = mask & (mask(k[16]) | mask(k[17]) << 8 | mask(k[18]) << 16 | mask(k[19]) << 24);
-        long j12 = mask & (mask(k[20]) | mask(k[21]) << 8 | mask(k[22]) << 16 | mask(k[23]) << 24);
-        long j13 = mask & (mask(k[24]) | mask(k[25]) << 8 | mask(k[26]) << 16 | mask(k[27]) << 24);
-        long j14 = mask & (mask(k[28]) | mask(k[29]) << 8 | mask(k[30]) << 16 | mask(k[31]) << 24);
-        long j15 = mask & (mask(c[12]) | mask(c[13]) << 8 | mask(c[14]) << 16 | mask(c[15]) << 24);
+        long j0 = mask & ((0xFFl & c[0]) | (0xFFl & c[1]) << 8 | (0xFFl & c[2]) << 16 | (0xFFl & c[3]) << 24);
+        long j1 = mask & ((0xFFl & k[0]) | (0xFFl & k[1]) << 8 | (0xFFl & k[2]) << 16 | (0xFFl & k[3]) << 24);
+        long j2 = mask & ((0xFFl & k[4]) | (0xFFl & k[5]) << 8 | (0xFFl & k[6]) << 16 | (0xFFl & k[7]) << 24);
+        long j3 = mask & ((0xFFl & k[8]) | (0xFFl & k[9]) << 8 | (0xFFl & k[10]) << 16 | (0xFFl & k[11]) << 24);
+        long j4 = mask & ((0xFFl & k[12]) | (0xFFl & k[13]) << 8 | (0xFFl & k[14]) << 16 | (0xFFl & k[15]) << 24);
+        long j5 = mask & ((0xFFl & c[4]) | (0xFFl & c[5]) << 8 | (0xFFl & c[6]) << 16 | (0xFFl & c[7]) << 24);
+        long j6 = mask & ((0xFFl & in[0]) | (0xFFl & in[1]) << 8 | (0xFFl & in[2]) << 16 | (0xFFl & in[3]) << 24);
+        long j7 = mask & ((0xFFl & in[4]) | (0xFFl & in[5]) << 8 | (0xFFl & in[6]) << 16 | (0xFFl & in[7]) << 24);
+        long j8 = mask & ((0xFFl & in[8]) | (0xFFl & in[9]) << 8 | (0xFFl & in[10]) << 16 | (0xFFl & in[11]) << 24);
+        long j9 = mask & ((0xFFl & in[12]) | (0xFFl & in[13]) << 8 | (0xFFl & in[14]) << 16 | (0xFFl & in[15]) << 24);
+        long j10 = mask & ((0xFFl & c[8]) | (0xFFl & c[9]) << 8 | (0xFFl & c[10]) << 16 | (0xFFl & c[11]) << 24);
+        long j11 = mask & ((0xFFl & k[16]) | (0xFFl & k[17]) << 8 | (0xFFl & k[18]) << 16 | (0xFFl & k[19]) << 24);
+        long j12 = mask & ((0xFFl & k[20]) | (0xFFl & k[21]) << 8 | (0xFFl & k[22]) << 16 | (0xFFl & k[23]) << 24);
+        long j13 = mask & ((0xFFl & k[24]) | (0xFFl & k[25]) << 8 | (0xFFl & k[26]) << 16 | (0xFFl & k[27]) << 24);
+        long j14 = mask & ((0xFFl & k[28]) | (0xFFl & k[29]) << 8 | (0xFFl & k[30]) << 16 | (0xFFl & k[31]) << 24);
+        long j15 = mask & ((0xFFl & c[12]) | (0xFFl & c[13]) << 8 | (0xFFl & c[14]) << 16 | (0xFFl & c[15]) << 24);
 
         long x0 = j0, x1 = j1, x2 = j2, x3 = j3, x4 = j4;
         long x5 = j5, x6 = j6, x7 = j7, x8 = j8;
@@ -275,22 +271,22 @@ public class Salsa {
     // key k, and 16-byte constant c, and returns the result as the 32-byte array
     // out.
     public static byte[] HSalsa20(byte[] in, byte[] k, byte[] c) {
-        long x0 = mask(c[0]) | mask(c[1]) << 8 | mask(c[2]) << 16 | mask(c[3]) << 24;
-        long x1 = mask(k[0]) | mask(k[1]) << 8 | mask(k[2]) << 16 | mask(k[3]) << 24;
-        long x2 = mask(k[4]) | mask(k[5]) << 8 | mask(k[6]) << 16 | mask(k[7]) << 24;
-        long x3 = mask(k[8]) | mask(k[9]) << 8 | mask(k[10]) << 16 | mask(k[11]) << 24;
-        long x4 = mask(k[12]) | mask(k[13]) << 8 | mask(k[14]) << 16 | mask(k[15]) << 24;
-        long x5 = mask(c[4]) | mask(c[5]) << 8 | mask(c[6]) << 16 | mask(c[7]) << 24;
-        long x6 = mask(in[0]) | mask(in[1]) << 8 | mask(in[2]) << 16 | mask(in[3]) << 24;
-        long x7 = mask(in[4]) | mask(in[5]) << 8 | mask(in[6]) << 16 | mask(in[7]) << 24;
-        long x8 = mask(in[8]) | mask(in[9]) << 8 | mask(in[10]) << 16 | mask(in[11]) << 24;
-        long x9 = mask(in[12]) | mask(in[13]) << 8 | mask(in[14]) << 16 | mask(in[15]) << 24;
-        long x10 = mask(c[8]) | mask(c[9]) << 8 | mask(c[10]) << 16 | mask(c[11]) << 24;
-        long x11 = mask(k[16]) | mask(k[17]) << 8 | mask(k[18]) << 16 | mask(k[19]) << 24;
-        long x12 = mask(k[20]) | mask(k[21]) << 8 | mask(k[22]) << 16 | mask(k[23]) << 24;
-        long x13 = mask(k[24]) | mask(k[25]) << 8 | mask(k[26]) << 16 | mask(k[27]) << 24;
-        long x14 = mask(k[28]) | mask(k[29]) << 8 | mask(k[30]) << 16 | mask(k[31]) << 24;
-        long x15 = mask(c[12]) | mask(c[13]) << 8 | mask(c[14]) << 16 | mask(c[15]) << 24;
+        long x0 = (0xFFl & c[0]) | (0xFFl & c[1]) << 8 | (0xFFl & c[2]) << 16 | (0xFFl & c[3]) << 24;
+        long x1 = (0xFFl & k[0]) | (0xFFl & k[1]) << 8 | (0xFFl & k[2]) << 16 | (0xFFl & k[3]) << 24;
+        long x2 = (0xFFl & k[4]) | (0xFFl & k[5]) << 8 | (0xFFl & k[6]) << 16 | (0xFFl & k[7]) << 24;
+        long x3 = (0xFFl & k[8]) | (0xFFl & k[9]) << 8 | (0xFFl & k[10]) << 16 | (0xFFl & k[11]) << 24;
+        long x4 = (0xFFl & k[12]) | (0xFFl & k[13]) << 8 | (0xFFl & k[14]) << 16 | (0xFFl & k[15]) << 24;
+        long x5 = (0xFFl & c[4]) | (0xFFl & c[5]) << 8 | (0xFFl & c[6]) << 16 | (0xFFl & c[7]) << 24;
+        long x6 = (0xFFl & in[0]) | (0xFFl & in[1]) << 8 | (0xFFl & in[2]) << 16 | (0xFFl & in[3]) << 24;
+        long x7 = (0xFFl & in[4]) | (0xFFl & in[5]) << 8 | (0xFFl & in[6]) << 16 | (0xFFl & in[7]) << 24;
+        long x8 = (0xFFl & in[8]) | (0xFFl & in[9]) << 8 | (0xFFl & in[10]) << 16 | (0xFFl & in[11]) << 24;
+        long x9 = (0xFFl & in[12]) | (0xFFl & in[13]) << 8 | (0xFFl & in[14]) << 16 | (0xFFl & in[15]) << 24;
+        long x10 = (0xFFl & c[8]) | (0xFFl & c[9]) << 8 | (0xFFl & c[10]) << 16 | (0xFFl & c[11]) << 24;
+        long x11 = (0xFFl & k[16]) | (0xFFl & k[17]) << 8 | (0xFFl & k[18]) << 16 | (0xFFl & k[19]) << 24;
+        long x12 = (0xFFl & k[20]) | (0xFFl & k[21]) << 8 | (0xFFl & k[22]) << 16 | (0xFFl & k[23]) << 24;
+        long x13 = (0xFFl & k[24]) | (0xFFl & k[25]) << 8 | (0xFFl & k[26]) << 16 | (0xFFl & k[27]) << 24;
+        long x14 = (0xFFl & k[28]) | (0xFFl & k[29]) << 8 | (0xFFl & k[30]) << 16 | (0xFFl & k[31]) << 24;
+        long x15 = (0xFFl & c[12]) | (0xFFl & c[13]) << 8 | (0xFFl & c[14]) << 16 | (0xFFl & c[15]) << 24;
 
         long mask = 0xFFFFFFFFl;
         for (int i = 0; i < 20; i += 2) {

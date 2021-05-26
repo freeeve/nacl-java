@@ -47,13 +47,14 @@ public class SecretBox {
 
         // We XOR up to 32 bytes of message with the keystream generated from
         // the first block.
-        byte firstMessageBlock[] = new byte[message.length];
+        byte firstMessageBlock[] = null;
         if (message.length > 32) {
             firstMessageBlock = new byte[32];
             for (int i = 0; i < 32; i++) {
                 firstMessageBlock[i] = message[i];
             }
         } else { // for shorter messages
+            firstMessageBlock = new byte[message.length];
             for (int i = 0; i < message.length; i++) {
                 firstMessageBlock[i] = message[i];
             }
